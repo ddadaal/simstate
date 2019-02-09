@@ -6,7 +6,7 @@ Inspired by [unstated](https://github.com/jamiebuilds/unstated), restate is a Re
 
 ```tsx
 import React from "react";
-import { Store, useStore } from "restate";
+import { Store, useStore, StoreProvider } from "restate";
 
 // 1. Define your store
 
@@ -18,7 +18,7 @@ class TestStore extends Store<IStore> {
   state = { value: 42 };
 
   increment() {
-    this.setState({ value: this.state.value + 1});
+    this.setState({ value: this.state.value + 1 });
   }
 }
 
@@ -32,7 +32,7 @@ const RootComponent = () => {
   </StoreProvider>
 };
 
-// 3. Use `useStore` hook to the store instance (recommended)
+// 3. Use `useStore` hook to get the store instance (recommended)
 
 function CounterWithHook() {
   const store = useStore(TestStore);
@@ -52,21 +52,21 @@ function CounterWithHook() {
 
 # Features
 
-- Define your state and action in a class like a React class component
-    - Update states using setState but it's synchonrous
+- Define states and actions in a class like a React class component
+    - Update states using `setState` but it's synchonrous
 - Use provided stores in components with [hooks](https://reactjs.org/docs/hooks-intro.html) in state management
-    - `Render props` and `HOC` are also provided for compatibilities (like using store in a class component)
+    - `render props` and `HOC` are also provided for compatibilities (like using store in a class component)
 - No dependency but React 16.8 or higher
-- Full support in TypeScript
+- Full support in TypeScript. All types can be automatically inferred.
 - Basic SSR utilities support
 
 ## Roadmap
 
 - [x] Store and `useStore` hook
-- [] render props component
-- [] HOC
-- [] SSR utilities and its example
-- [] Add test and achieve 100% test coverage
+- [ ] render props component
+- [ ] HOC
+- [ ] SSR utilities and its example
+- [ ] Add test and achieve 100% test coverage
 
 # License
 
