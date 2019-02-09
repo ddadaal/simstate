@@ -1,0 +1,43 @@
+{
+  "name": "restate",
+  "version": "0.0.1",
+  "description": "A simple but powerful React state management tool powered by hooks",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "yarn run lint && yarn run clean:dist && NODE_ENV=production rollup -c",
+    "clean:dist": "rm -rf dist/*",
+    "watch": "rollup -cw",
+    "start": "rollup -cw",
+    "lint": "tslint --project tsconfig.json --project"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/viccrubs/restate"
+  },
+  "author": {
+    "name": "Chen Junda",
+    "email": "smallda@outlook.com",
+    "url": "https://viccrubs.me"
+  },
+  "homepage": "https://github.com/viccrubs/restate",
+  "dependencies": {
+    "react": ">=16.8.0"
+  },
+  "devDependencies": {
+    "rollup-plugin-babel-minify": "latest",
+    "@types/react": "latest",
+    "rollup": "latest",
+    "rollup-plugin-commonjs": "latest",
+    "rollup-plugin-livereload": "latest",
+    "rollup-plugin-node-resolve": "latest",
+    "rollup-plugin-replace": "latest",
+    "rollup-plugin-serve": "latest",
+    "rollup-plugin-typescript2": "latest",
+    "rollup-watch": "latest",
+    "tslib": "latest",
+    "tslint": "latest",
+    "typescript": "latest"
+  }
+}
