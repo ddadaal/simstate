@@ -1,18 +1,20 @@
 {
   "name": "restate",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A React state management tool favoring React Hooks",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "yarn run lint && yarn run clean:dist && NODE_ENV=production rollup -c",
-    "clean:dist": "rm -rf dist/*",
+    "clean:dist": "rimraf dist",
     "watch": "rollup -cw",
     "start": "rollup -cw",
     "lint": "tslint --project tsconfig.json --project",
+    "lint:fix": "tslint --project tsconfig.json --project --fix",
     "test": "jest",
-    "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls"
+    "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
+    "release": "standard-version"
   },
   "repository": {
     "type": "git",
@@ -37,6 +39,7 @@
     "enzyme-adapter-react-16": "^1.9.1",
     "jest": "^24.1.0",
     "react-dom": "^16.8.1",
+    "rimraf": "^2.6.3",
     "rollup": "latest",
     "rollup-plugin-babel-minify": "latest",
     "rollup-plugin-commonjs": "latest",
@@ -46,9 +49,11 @@
     "rollup-plugin-serve": "latest",
     "rollup-plugin-typescript2": "latest",
     "rollup-watch": "latest",
+    "standard-version": "^4.4.0",
     "ts-jest": "^23.10.5",
     "tslib": "latest",
     "tslint": "latest",
+    "tslint-react": "^3.6.0",
     "typescript": "latest"
   }
 }
