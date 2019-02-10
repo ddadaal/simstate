@@ -1,6 +1,6 @@
 {
   "name": "simstate",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A React state management tool favoring React Hooks",
   "license": "MIT",
   "main": "dist/simstate.js",
@@ -14,7 +14,7 @@
     "lint": "tslint 'src/**/*.{ts,tsx}' --fix",
     "test": "jest",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
-    "release": "standard-version"
+    "release": "yarn run build && standard-version"
   },
   "repository": {
     "type": "git",
