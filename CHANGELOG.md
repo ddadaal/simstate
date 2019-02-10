@@ -5,11 +5,7 @@ All notable changes to this project will be documented in this file. See [standa
 <a name="1.0.0"></a>
 # [1.0.0](https://github.com/viccrubs/simstate/compare/v0.0.4...v1.0.0) (2019-02-10)
 
-
-
-<a name="1.0.0"></a>
-## [1.0.0](https://github.com/viccrubs/simstate/compare/v0.0.4...v1.0.0) (2019-02-10)
-
+- Ready for production
 
 
 <a name="0.0.4"></a>
