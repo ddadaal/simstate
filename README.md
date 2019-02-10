@@ -7,7 +7,7 @@
 
 # How to use
 
-```tsx
+```jsx
 import React from "react";
 import { Store, useStore, StoreProvider } from "restate";
 

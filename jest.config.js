@@ -17,7 +17,6 @@ module.exports = {
   setupFilesAfterEnv: [
     '<rootDir>/src/__tests__/enzyme.js'
   ],
-  collectCoverage: true,
   coverageReporters: [
     'json',
     'lcov',
