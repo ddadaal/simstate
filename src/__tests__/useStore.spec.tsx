@@ -27,7 +27,8 @@ describe("UseStore", () => {
   it("should add a listener when mounted and remove one when unmounted", () => {
     const store = new TestStore(42);
 
-    expect(store.observers).toHaveLength(0);
+    // tslint:disable-next-line
+    expect(store["observers"]).toHaveLength(0);
 
     const wrapper = mount(
       <StoreProvider stores={[store]}>
@@ -35,11 +36,13 @@ describe("UseStore", () => {
       </StoreProvider>,
     );
 
-    expect(store.observers).toHaveLength(1);
+    // tslint:disable-next-line
+    expect(store["observers"]).toHaveLength(1);
 
     wrapper.unmount();
 
-    expect(store.observers).toHaveLength(0);
+    // tslint:disable-next-line
+    expect(store["observers"]).toHaveLength(0);
 
   });
 

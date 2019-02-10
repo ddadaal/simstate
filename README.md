@@ -1,7 +1,8 @@
 # simstate
-
-[![Build Status](https://travis-ci.org/viccrubs/simstate.svg?branch=master)](https://travis-ci.org/viccrubs/simstate) 
-[![Coverage Status](https://coveralls.io/repos/github/viccrubs/simstate/badge.svg?branch=master)](https://coveralls.io/github/viccrubs/simstate?branch=master)
+[![npm](https://img.shields.io/npm/v/simstate.svg?style=flat-square)](https://www.npmjs.com/package/simstate)
+[![types](https://img.shields.io/npm/types/simstate.svg?style=flat-square)](https://www.npmjs.com/package/simstate)
+[![Build Status](https://img.shields.io/travis/viccrubs/simstate.svg?style=flat-square)](https://travis-ci.org/viccrubs/simstate) 
+[![Coverage Status](https://img.shields.io/coveralls/github/viccrubs/simstate.svg?style=flat-square)](https://coveralls.io/github/viccrubs/simstate?branch=master) 
 
 `simstate` is a React state management tool favoring [React Hooks](https://reactjs.org/docs/hooks-intro.html) .
 
