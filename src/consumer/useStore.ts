@@ -1,19 +1,24 @@
 import { StoreType } from "..";
 import { ProviderContext } from "../StoreProvider";
 import { useContext, useState, useRef, useLayoutEffect } from "react";
+import { noProviderError, notProvidedError } from "../Error";
 
 export default function useStore<ST extends StoreType<any>>
 (storeType: ST): InstanceType<ST> {
   const providedStores = useContext(ProviderContext);
 
+  if (!providedStores) {
+    throw noProviderError();
+  }
+
   const store = providedStores.get(storeType) as InstanceType<ST> | undefined;
 
   if (!store) {
-    throw new Error(`${storeType.name} hasn't been provided.`);
+    throw notProvidedError(storeType);
   }
 
   // dummy state used to cause update
-  const [_, update] = useState({});
+  const [, update] = useState({});
 
   // create a persistent update function
   const { current: listener } = useRef(() => update({}));
@@ -24,7 +29,7 @@ export default function useStore<ST extends StoreType<any>>
     return () => {
       store.unsubscribe(listener);
     };
-  }, []);
+  }, [store]);
 
   return store;
 }

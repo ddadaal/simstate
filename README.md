@@ -1,6 +1,6 @@
 # restate
 
-Inspired by [unstated](https://github.com/jamiebuilds/unstated), restate is a React state management tool aiming to provide enough functions with minimal code needed powered on [React Hooks](https://reactjs.org/docs/hooks-intro.html) and [Context](https://reactjs.org/docs/context.html).
+`restate` is a [React Hooks](https://reactjs.org/docs/hooks-intro.html) based state management tool.
 
 # How to use
 
@@ -27,9 +27,11 @@ class TestStore extends Store<IStore> {
 const store = new TestStore();
 
 const RootComponent = () => {
-  <StoreProvider stores={[store]}>
-    <CounterWithHook />
-  </StoreProvider>
+  return (
+    <StoreProvider stores={[store]}>
+      <CounterWithHook />
+    </StoreProvider>
+  );
 };
 
 // 3. Use `useStore` hook to get the store instance (recommended)
@@ -53,7 +55,7 @@ function CounterWithHook() {
 # Features
 
 - Define states and actions in a class like a React class component
-    - Update states using `setState` but it's synchonrous
+    - Update states using `setState` which returns a Promise resolved when react component updated (yah)
 - Use provided stores in components with [hooks](https://reactjs.org/docs/hooks-intro.html) in state management
     - `render props` and `HOC` are also provided for compatibilities (like using store in a class component)
 - No dependency but React 16.8 or higher
@@ -63,10 +65,15 @@ function CounterWithHook() {
 ## Roadmap
 
 - [x] Store and `useStore` hook
-- [ ] render props component
-- [ ] HOC
+- [x] render props component
+- [x] HOC
 - [ ] SSR utilities and its example
-- [ ] Add test and achieve 100% test coverage
+- [ ] Add test
+- [ ] Achieve 100% test coverage
+
+# Credits
+
+[unstated](https://github.com/jamiebuilds/unstated) - This tool is inspired by unstated.
 
 # License
 

@@ -1,7 +1,7 @@
 {
   "name": "restate",
   "version": "0.0.1",
-  "description": "A simple but powerful React state management tool powered by hooks",
+  "description": "A React Hooks based state management tool",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -26,9 +26,12 @@
     "react": ">=16.8.0"
   },
   "devDependencies": {
-    "rollup-plugin-babel-minify": "latest",
-    "@types/react": "latest",
+    "@types/react-test-renderer": "^16.8.0",
+    "@types/react": ">=16.8.0",
+    "jest": "^24.1.0",
+    "react-test-renderer": "^16.8.1",
     "rollup": "latest",
+    "rollup-plugin-babel-minify": "latest",
     "rollup-plugin-commonjs": "latest",
     "rollup-plugin-livereload": "latest",
     "rollup-plugin-node-resolve": "latest",
@@ -36,6 +39,7 @@
     "rollup-plugin-serve": "latest",
     "rollup-plugin-typescript2": "latest",
     "rollup-watch": "latest",
+    "ts-jest": "^23.10.5",
     "tslib": "latest",
     "tslint": "latest",
     "typescript": "latest"

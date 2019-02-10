@@ -1,4 +1,4 @@
-type Observer = () => void;
+type Observer = (() => void) | (() => Promise<void>);
 
 export default class Store<State extends object> {
 
@@ -6,7 +6,7 @@ export default class Store<State extends object> {
 
   private observers: Observer[] = [];
 
-  setState(
+  async setState(
     updater: Partial<State> | ((prevState: State) => State),
   ) {
 
@@ -22,7 +22,9 @@ export default class Store<State extends object> {
     };
 
 
-    this.observers.forEach((observer) => observer());
+    const promises = this.observers.map((observer) => observer());
+
+    return Promise.all(promises);
   }
 
   subscribe(fn: Observer) {

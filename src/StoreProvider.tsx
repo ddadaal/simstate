@@ -1,7 +1,7 @@
 import React, { createContext, useRef } from "react";
 import { Store, StoreType } from ".";
 
-type IProviderContext = Map<StoreType<any>, Store<any>>;
+export type IProviderContext = Map<StoreType<any>, Store<any>>;
 
 export const ProviderContext = createContext<IProviderContext>(new Map());
 
