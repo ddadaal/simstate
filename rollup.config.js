@@ -39,7 +39,7 @@ export default {
   external: [
     'react',
   ],
-  input: './src/index.js',
+  input: './src/index.ts',
   output: {
     sourcemap: true,
     file: './dist/index.js',

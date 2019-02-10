@@ -17,7 +17,6 @@ export default class Store<State extends object> {
       ...nextState,
     };
 
-
     const promises = this.observers.map((observer) => observer());
 
     return Promise.all(promises);

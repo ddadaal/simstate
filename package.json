@@ -1,35 +1,35 @@
 {
-  "name": "restate",
+  "name": "simstate",
   "version": "0.0.3",
   "description": "A React state management tool favoring React Hooks",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "yarn run lint && yarn run clean:dist && NODE_ENV=production rollup -c",
+    "build": "yarn run lint && yarn run clean:dist && cross-env NODE_ENV=production rollup -c",
     "clean:dist": "rimraf dist",
     "watch": "rollup -cw",
     "start": "rollup -cw",
-    "lint": "tslint --project tsconfig.json --project",
-    "lint:fix": "tslint --project tsconfig.json --project --fix",
+    "lint": "tslint 'src/**/*.{ts,tsx}' --fix",
     "test": "jest",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
     "release": "standard-version"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/viccrubs/restate"
+    "url": "git+https://github.com/viccrubs/simstate"
   },
   "author": {
     "name": "Chen Junda",
     "email": "smallda@outlook.com",
     "url": "https://viccrubs.me"
   },
-  "homepage": "https://github.com/viccrubs/restate",
+  "homepage": "https://github.com/viccrubs/simstate",
   "dependencies": {
     "react": ">=16.8.0"
   },
   "devDependencies": {
+    "cross-env": "^5.2.0",
     "@types/enzyme": "^3.1.17",
     "@types/jest": "^24.0.0",
     "@types/react": ">=16.8.0",

@@ -18,7 +18,7 @@ describe("UseStore", () => {
     const wrapper = mount(
       <StoreProvider stores={[store]}>
         <Component />
-      </StoreProvider>
+      </StoreProvider>,
     );
 
     expect(wrapper.find("span").text()).toBe("42");
@@ -27,19 +27,19 @@ describe("UseStore", () => {
   it("should add a listener when mounted and remove one when unmounted", () => {
     const store = new TestStore(42);
 
-    expect(store["observers"]).toHaveLength(0);
+    expect(store.observers).toHaveLength(0);
 
     const wrapper = mount(
       <StoreProvider stores={[store]}>
         <Component />
-      </StoreProvider>
+      </StoreProvider>,
     );
 
-    expect(store["observers"]).toHaveLength(1);
+    expect(store.observers).toHaveLength(1);
 
     wrapper.unmount();
 
-    expect(store["observers"]).toHaveLength(0);
+    expect(store.observers).toHaveLength(0);
 
   });
 
@@ -52,7 +52,7 @@ describe("UseStore", () => {
     expect(() => mount(
       <StoreProvider stores={[]}>
         <Component />
-      </StoreProvider>
+      </StoreProvider>,
     )).toThrowError();
   });
 

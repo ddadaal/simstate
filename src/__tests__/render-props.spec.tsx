@@ -23,7 +23,7 @@ describe("Render props", () => {
     const wrapper = mount(
       <StoreProvider stores={[store]}>
         <Component />
-      </StoreProvider>
+      </StoreProvider>,
     );
 
     expect(wrapper.find("span").text()).toBe("42");
@@ -35,7 +35,7 @@ describe("Render props", () => {
     const wrapper = mount(
       <StoreProvider stores={[store]}>
         <Component />
-      </StoreProvider>
+      </StoreProvider>,
     );
 
     expect(wrapper.find("span").text()).toBe("42");
@@ -54,23 +54,24 @@ describe("Render props", () => {
 
     const store = new TestStore(42);
 
+    // tslint:disable-next-line
     expect(store["observers"]).toHaveLength(0);
 
     const wrapper = mount(
       <StoreProvider stores={[store]}>
         <Component />
-      </StoreProvider>
+      </StoreProvider>,
     );
 
+    // tslint:disable-next-line
     expect(store["observers"]).toHaveLength(1);
 
     wrapper.unmount();
 
+    // tslint:disable-next-line
     expect(store["observers"]).toHaveLength(0);
 
-
   });
-
 
   it("should report error when using a store that is not specified", () => {
     console.error = () => { };
@@ -82,13 +83,13 @@ describe("Render props", () => {
           return "never reach here!";
         }}
       </StoreConsumer>
-    )
+    );
 
     // provided but not specified
     expect(() => mount(
       <StoreProvider stores={[new TestStore(42)]}>
         <Component />
-      </StoreProvider>
+      </StoreProvider>,
     )).toThrowError();
   });
 

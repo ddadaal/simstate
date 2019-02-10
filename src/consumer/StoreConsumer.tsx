@@ -30,13 +30,13 @@ export default class StoreConsumer extends React.Component<RealProps, State> {
   private unsubscribe() {
     Array.from(this.storeMap.values()).forEach((store) => {
       store.unsubscribe(this.update);
-    })
+    });
   }
 
   update = () => {
     return new Promise((resolve) => {
       if (!this.unmounted) {
-        this.setState({}, resolve)
+        this.setState({}, resolve);
       } else {
         // hard to test so just ignore it :D
         /* istanbul ignore next line */
@@ -83,7 +83,7 @@ export default class StoreConsumer extends React.Component<RealProps, State> {
         {(map) => {
           this.createInstances(map);
           return this.props.children({
-            useStore: this.useStore
+            useStore: this.useStore,
           });
         }}
       </ProviderContext.Consumer>

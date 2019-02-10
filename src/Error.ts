@@ -1,4 +1,4 @@
-import { StoreType } from '.';
+import { StoreType } from ".";
 
 export function noProviderError(): Error {
   return new Error("Wrap your component in a StoreProvider.");

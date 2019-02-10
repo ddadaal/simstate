@@ -18,9 +18,7 @@ export default function withStores(...storeTypes: Array<StoreType<any>>) {
               {...props}
             />
           );
-        }
-
-        }
+        }}
       </StoreConsumer>
     );
 

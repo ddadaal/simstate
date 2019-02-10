@@ -1,15 +1,15 @@
-# restate
+# simstate
 
-[![Build Status](https://travis-ci.org/viccrubs/restate.svg?branch=master)](https://travis-ci.org/viccrubs/restate) 
-[![Coverage Status](https://coveralls.io/repos/github/viccrubs/restate/badge.svg?branch=master)](https://coveralls.io/github/viccrubs/restate?branch=master)
+[![Build Status](https://travis-ci.org/viccrubs/simstate.svg?branch=master)](https://travis-ci.org/viccrubs/simstate) 
+[![Coverage Status](https://coveralls.io/repos/github/viccrubs/simstate/badge.svg?branch=master)](https://coveralls.io/github/viccrubs/simstate?branch=master)
 
-`restate` is a React state management tool favoring [React Hooks](https://reactjs.org/docs/hooks-intro.html) .
+`simstate` is a React state management tool favoring [React Hooks](https://reactjs.org/docs/hooks-intro.html) .
 
 # How to use
 
 ```jsx
 import React from "react";
-import { Store, useStore, StoreProvider } from "restate";
+import { Store, useStore, StoreProvider } from "simstate";
 
 // 1. Define your store
 

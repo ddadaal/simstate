@@ -5,7 +5,6 @@ import withStores from "../consumer/withStores";
 import StoreProvider from "../StoreProvider";
 import { Store } from "..";
 
-
 describe("HOC", () => {
 
   const Component = withStores(TestStore)(({ useStore }) => (
@@ -18,7 +17,7 @@ describe("HOC", () => {
     const wrapper = mount(
       <StoreProvider stores={[store]}>
         <Component />
-      </StoreProvider>
+      </StoreProvider>,
     );
 
     expect(wrapper.find("span").text()).toBe("42");
@@ -31,7 +30,7 @@ describe("HOC", () => {
     const wrapper = mount(
       <StoreProvider stores={[store]}>
         <Component />
-      </StoreProvider>
+      </StoreProvider>,
     );
 
     expect(wrapper.find("span").text()).toBe("42");
@@ -44,33 +43,32 @@ describe("HOC", () => {
 
     expect(wrapper.find("span").text()).toBe("44");
 
-
   });
 
   it("should add a listener when mounted and remove one when unmounted", () => {
 
     const store = new TestStore(42);
 
+    // tslint:disable-next-line
     expect(store["observers"]).toHaveLength(0);
 
     const wrapper = mount(
       <StoreProvider stores={[store]}>
         <Component />
-      </StoreProvider>
+      </StoreProvider>,
     );
 
+    // tslint:disable-next-line
     expect(store["observers"]).toHaveLength(1);
 
     wrapper.unmount();
 
+    // tslint:disable-next-line
     expect(store["observers"]).toHaveLength(0);
-
 
   });
 
   it("should report error when using a store that is not specified", () => {
-
-
 
     class AnotherStore extends Store<{}> {
       state = {};
@@ -84,7 +82,7 @@ describe("HOC", () => {
     expect(() => mount(
       <StoreProvider stores={[new AnotherStore()]}>
         <Component/>
-      </StoreProvider>
+      </StoreProvider>,
     ));
   });
 
@@ -93,13 +91,12 @@ describe("HOC", () => {
     expect(() => mount(
       <StoreProvider stores={[]}>
         <Component />
-      </StoreProvider>
+      </StoreProvider>,
     )).toThrowError();
   });
 
   it("should report error with no StoreProvider", () => {
     expect(() => mount(<Component />)).toThrowError();
   });
-
 
 });
