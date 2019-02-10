@@ -12,10 +12,6 @@ export default class Store<State extends object> {
 
     const nextState = typeof updater === "function" ? updater(this.state) : updater;
 
-    if (nextState == null) {
-      return;
-    }
-
     this.state = {
       ...this.state,
       ...nextState,
@@ -36,9 +32,9 @@ export default class Store<State extends object> {
 
   }
 
-  afterHydration() {
-    // can be overwritten
-  }
+  // afterHydration() {
+  //
+  // }
 }
 
 export type StoreType<T extends object> = new (...args: any[]) => Store<T>;

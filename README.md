@@ -1,6 +1,10 @@
 # restate
 
-`restate` is a [React Hooks](https://reactjs.org/docs/hooks-intro.html) based state management tool.
+[![Build Status](https://travis-ci.org/viccrubs/restate.svg?branch=master)](https://travis-ci.org/viccrubs/restate)
+
+[![Coverage Status](https://coveralls.io/repos/github/viccrubs/restate/badge.svg?branch=master)](https://coveralls.io/github/viccrubs/restate?branch=master)
+
+`restate` is a React state management tool favoring [React Hooks](https://reactjs.org/docs/hooks-intro.html) .
 
 # How to use
 
@@ -30,6 +34,8 @@ const RootComponent = () => {
   return (
     <StoreProvider stores={[store]}>
       <CounterWithHook />
+      <ComponentWithRenderProps />
+      <ComponentWithHOC />
     </StoreProvider>
   );
 };
@@ -46,16 +52,53 @@ function CounterWithHook() {
   );
 }
 
-// 3.1 Use render props (in progress)
+// 3.1 Use render props
+function ComponentWithRenderProps() {
+  <StoreConsumer storeTypes={[TestStore]}>
+    {({ useStore }) => {
+      const store = useStore(TestStore);
+      return (
+        <span>
+          {store.state.value}
+        </span>
+      );
+    }}
+  </StoreConsumer>
+}
 
-// 3.2 Use HOC (in progress)
+// 3.2 Use HOC
+const ComponentWithHOC = withStores(TestStore)(({ useStore }) => (
+  <span>{useStore(TestStore).state.value}</span>
+));
+
+// For render props and HOC, setState can be awaited for actual component update
+function AwaitedComponent() {
+  <StoreConsumer storeTypes={[TestStore]}>
+    {({ useStore }) => {
+      const store = useStore(TestStore);
+      return (
+        <button onClick={async () => {
+          console.log(store.state.value) // 42
+
+          // update state via function
+          await store.setState(({ value }) => ({ value: value + 2 }));
+
+          console.log(store.state.value) // 44, and the innerText of this button will also be 44
+        }}>
+          {store.state.value}
+        </button>
+      );
+    }}
+  </StoreConsumer>
+}
 
 ```
 
 # Features
 
 - Define states and actions in a class like a React class component
-    - Update states using `setState` which returns a Promise resolved when react component updated (yah)
+    - Update states using `setState`
+    - For `render props` and `HOC`, the promise returned by `setState` is resolved when the component is updated (the callback for `setState`); for hook usage, the promise is immediately resolved. It is being worked on.
 - Use provided stores in components with [hooks](https://reactjs.org/docs/hooks-intro.html) in state management
     - `render props` and `HOC` are also provided for compatibilities (like using store in a class component)
 - No dependency but React 16.8 or higher
@@ -65,15 +108,16 @@ function CounterWithHook() {
 ## Roadmap
 
 - [x] Store and `useStore` hook
-- [x] render props component
+- [x] Render props component
 - [x] HOC
+- [X] Add test
+- [X] Achieve high test coverage
+- [X] Implement `setState` promise resolve after component update for hook use
 - [ ] SSR utilities and its example
-- [ ] Add test
-- [ ] Achieve 100% test coverage
 
 # Credits
 
-[unstated](https://github.com/jamiebuilds/unstated) - This tool is inspired by unstated.
+[unstated](https://github.com/jamiebuilds/unstated) - This tool is hugely inspired by unstated.
 
 # License
 

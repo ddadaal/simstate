@@ -3,8 +3,7 @@ import { ProviderContext } from "../StoreProvider";
 import { useContext, useState, useRef, useLayoutEffect } from "react";
 import { noProviderError, notProvidedError } from "../Error";
 
-export default function useStore<ST extends StoreType<any>>
-(storeType: ST): InstanceType<ST> {
+export default function useStore<ST extends StoreType<any>>(storeType: ST) {
   const providedStores = useContext(ProviderContext);
 
   if (!providedStores) {

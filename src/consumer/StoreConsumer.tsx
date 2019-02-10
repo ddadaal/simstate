@@ -1,5 +1,5 @@
 import React from "react";
-import { Store, StoreType } from "..";
+import { StoreType } from "..";
 import { ProviderContext, IProviderContext } from "../StoreProvider";
 import { noProviderError, notProvidedError } from "../Error";
 
@@ -38,6 +38,8 @@ export default class StoreConsumer extends React.Component<RealProps, State> {
       if (!this.unmounted) {
         this.setState({}, resolve)
       } else {
+        // hard to test so just ignore it :D
+        /* istanbul ignore next line */
         resolve();
       }
     });
@@ -46,8 +48,8 @@ export default class StoreConsumer extends React.Component<RealProps, State> {
   createInstances(map: IProviderContext) {
     this.unsubscribe();
 
-    if (map == null) {
-      noProviderError();
+    if (!map) {
+      throw noProviderError();
     }
 
     this.storeMap.clear();

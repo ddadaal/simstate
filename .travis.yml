@@ -1,0 +1,16 @@
+language: node_js
+node_js:
+- "lts/*"
+branches:
+  only:
+  - master
+
+cache: yarn
+
+before_install:
+- yarn update
+install:
+- yarn install
+script:
+- yarn test
+- yarn run coveralls

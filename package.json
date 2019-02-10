@@ -1,7 +1,7 @@
 {
   "name": "restate",
-  "version": "0.0.1",
-  "description": "A React Hooks based state management tool",
+  "version": "0.0.2",
+  "description": "A React state management tool favoring React Hooks",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,7 +10,9 @@
     "clean:dist": "rm -rf dist/*",
     "watch": "rollup -cw",
     "start": "rollup -cw",
-    "lint": "tslint --project tsconfig.json --project"
+    "lint": "tslint --project tsconfig.json --project",
+    "test": "jest",
+    "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "repository": {
     "type": "git",
@@ -26,10 +28,15 @@
     "react": ">=16.8.0"
   },
   "devDependencies": {
-    "@types/react-test-renderer": "^16.8.0",
+    "@types/enzyme": "^3.1.17",
+    "@types/jest": "^24.0.0",
     "@types/react": ">=16.8.0",
+    "@types/react-test-renderer": "^16.8.0",
+    "coveralls": "^3.0.2",
+    "enzyme": "^3.8.0",
+    "enzyme-adapter-react-16": "^1.9.1",
     "jest": "^24.1.0",
-    "react-test-renderer": "^16.8.1",
+    "react-dom": "^16.8.1",
     "rollup": "latest",
     "rollup-plugin-babel-minify": "latest",
     "rollup-plugin-commonjs": "latest",
