@@ -1,6 +1,6 @@
 {
   "name": "simstate",
-  "version": "0.0.4",
+  "version": "1.0.0",
   "description": "A React state management tool favoring React Hooks",
   "license": "MIT",
   "main": "dist/simstate.js",
