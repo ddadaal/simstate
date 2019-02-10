@@ -1,9 +1,10 @@
 {
   "name": "simstate",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A React state management tool favoring React Hooks",
   "license": "MIT",
-  "main": "dist/index.js",
+  "main": "dist/simstate.js",
+  "module": "dist/simstate.es.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "yarn run lint && yarn run clean:dist && cross-env NODE_ENV=production rollup -c",
@@ -25,16 +26,16 @@
     "url": "https://viccrubs.me"
   },
   "homepage": "https://github.com/viccrubs/simstate",
-  "dependencies": {
+  "peerDependencies": {
     "react": ">=16.8.0"
   },
   "devDependencies": {
-    "cross-env": "^5.2.0",
     "@types/enzyme": "^3.1.17",
     "@types/jest": "^24.0.0",
     "@types/react": ">=16.8.0",
     "@types/react-test-renderer": "^16.8.0",
     "coveralls": "^3.0.2",
+    "cross-env": "^5.2.0",
     "enzyme": "^3.8.0",
     "enzyme-adapter-react-16": "^1.9.1",
     "jest": "^24.1.0",
@@ -42,10 +43,7 @@
     "rimraf": "^2.6.3",
     "rollup": "latest",
     "rollup-plugin-babel-minify": "latest",
-    "rollup-plugin-commonjs": "latest",
     "rollup-plugin-livereload": "latest",
-    "rollup-plugin-node-resolve": "latest",
-    "rollup-plugin-replace": "latest",
     "rollup-plugin-serve": "latest",
     "rollup-plugin-typescript2": "latest",
     "rollup-watch": "latest",
