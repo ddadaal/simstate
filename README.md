@@ -1,7 +1,6 @@
 # restate
 
-[![Build Status](https://travis-ci.org/viccrubs/restate.svg?branch=master)](https://travis-ci.org/viccrubs/restate)
-
+[![Build Status](https://travis-ci.org/viccrubs/restate.svg?branch=master)](https://travis-ci.org/viccrubs/restate) 
 [![Coverage Status](https://coveralls.io/repos/github/viccrubs/restate/badge.svg?branch=master)](https://coveralls.io/github/viccrubs/restate?branch=master)
 
 `restate` is a React state management tool favoring [React Hooks](https://reactjs.org/docs/hooks-intro.html) .

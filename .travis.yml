@@ -7,10 +7,8 @@ branches:
 
 cache: yarn
 
-before_install:
-- yarn update
 install:
-- yarn install
+- yarn
 script:
 - yarn test
 - yarn run coveralls
