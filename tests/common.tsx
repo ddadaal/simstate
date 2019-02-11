@@ -1,4 +1,4 @@
-import { Store } from "..";
+import { Store } from "../src";
 
 interface IStore {
   value: number;

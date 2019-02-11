@@ -1,6 +1,6 @@
 import { TestStore } from "./common";
 import { mount } from "enzyme";
-import { useStore, StoreProvider } from "..";
+import { useStore, StoreProvider } from "../src";
 import React from "react";
 
 describe("UseStore", () => {

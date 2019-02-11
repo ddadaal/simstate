@@ -1,15 +1,21 @@
-import { TestStore } from "./common";
 import React from "react";
+import { StoreConsumer } from "../src";
 import { mount } from "enzyme";
-import withStores from "../consumer/withStores";
-import StoreProvider from "../StoreProvider";
-import { Store } from "..";
+import StoreProvider from "../src/StoreProvider";
+import { TestStore } from "./common";
 
-describe("HOC", () => {
+describe("Render props", () => {
 
-  const Component = withStores(TestStore)(({ useStore }) => (
-    <span>{useStore(TestStore).state.value}</span>
-  ));
+  const Component = () => (
+    <StoreConsumer storeTypes={[TestStore]}>
+      {({ useStore }) => {
+        const store = useStore(TestStore);
+        return (
+          <span>{store.state.value}</span>
+        );
+      }}
+    </StoreConsumer>
+  );
 
   it("should render with current store state", () => {
     const store = new TestStore(42);
@@ -21,7 +27,6 @@ describe("HOC", () => {
     );
 
     expect(wrapper.find("span").text()).toBe("42");
-
   });
 
   it("should update the number after setState", async () => {
@@ -69,30 +74,34 @@ describe("HOC", () => {
   });
 
   it("should report error when using a store that is not specified", () => {
+    console.error = () => { };
 
-    class AnotherStore extends Store<{}> {
-      state = {};
-    }
+    const Component = () => (
+      <StoreConsumer storeTypes={[]}>
+        {({ useStore }) => {
+          useStore(TestStore);
+          return "never reach here!";
+        }}
+      </StoreConsumer>
+    );
 
-    const Component = withStores(AnotherStore)(({ useStore }) => {
-      useStore(TestStore);
-      return <div>"never reach here!"</div>;
-    });
-
+    // provided but not specified
     expect(() => mount(
-      <StoreProvider stores={[new AnotherStore()]}>
-        <Component/>
+      <StoreProvider stores={[new TestStore(42)]}>
+        <Component />
       </StoreProvider>,
-    ));
+    )).toThrowError();
   });
 
   it("should report error when using a store that is not provided", () => {
 
-    expect(() => mount(
+    const Root = () => (
       <StoreProvider stores={[]}>
         <Component />
-      </StoreProvider>,
-    )).toThrowError();
+      </StoreProvider>
+    );
+
+    expect(() => mount(<Root />)).toThrowError();
   });
 
   it("should report error with no StoreProvider", () => {

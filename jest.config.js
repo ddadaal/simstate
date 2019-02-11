@@ -5,7 +5,7 @@ module.exports = {
     'tsx',
   ],
   testMatch: [
-    '<rootDir>/src/__tests__/**/*.(test|spec).(ts|tsx)',
+    '<rootDir>/tests/**/*.(test|spec).(ts|tsx)',
   ],
   transform: {
     "^.+\\.tsx?$": "ts-jest"
@@ -15,7 +15,7 @@ module.exports = {
     'enzyme.js',
   ],
   setupFilesAfterEnv: [
-    '<rootDir>/src/__tests__/enzyme.js'
+    '<rootDir>/tests/enzyme.js'
   ],
   coverageReporters: [
     'json',
