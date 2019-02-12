@@ -1,10 +1,10 @@
 import { StoreType } from "..";
-import { ProviderContext } from "../StoreProvider";
+import { SimstateContext } from "../StoreProvider";
 import { useContext, useState, useRef, useLayoutEffect } from "react";
 import { noProviderError, notProvidedError } from "../Error";
 
 export default function useStore<ST extends StoreType<any>>(storeType: ST) {
-  const providedStores = useContext(ProviderContext);
+  const providedStores = useContext(SimstateContext);
 
   if (!providedStores) {
     throw noProviderError();

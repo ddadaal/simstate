@@ -1,6 +1,6 @@
 import React from "react";
 import { StoreType } from "..";
-import { ProviderContext, IProviderContext } from "../StoreProvider";
+import { SimstateContext, ISimstateContext } from "../StoreProvider";
 import { noProviderError, notProvidedError } from "../Error";
 
 export interface WithStoresProps {
@@ -20,7 +20,7 @@ export default class StoreConsumer extends React.Component<RealProps, State> {
 
   state = {};
   unmounted = false;
-  storeMap: IProviderContext = new Map();
+  storeMap: ISimstateContext = new Map();
 
   componentWillUnmount() {
     this.unmounted = true;
@@ -45,7 +45,7 @@ export default class StoreConsumer extends React.Component<RealProps, State> {
     });
   }
 
-  createInstances(map: IProviderContext) {
+  createInstances(map: ISimstateContext | undefined) {
     this.unsubscribe();
 
     if (!map) {
@@ -79,14 +79,14 @@ export default class StoreConsumer extends React.Component<RealProps, State> {
 
   render() {
     return (
-      <ProviderContext.Consumer>
+      <SimstateContext.Consumer>
         {(map) => {
           this.createInstances(map);
           return this.props.children({
             useStore: this.useStore,
           });
         }}
-      </ProviderContext.Consumer>
+      </SimstateContext.Consumer>
     );
   }
 }

@@ -75,7 +75,9 @@ const ComponentWithHOC = withStores(TestStore)(({ useStore }) => ( // only injec
   <span>{useStore(TestStore).state.value}</span>
 ));
 
-// For render props and HOC, setState can be awaited for actual component update
+// Once the promise returned by `setState` resolves,
+// it is guaranteed for components that use render props and HOC that have updated,
+// but these using `useStore` hook will not have the guarantee.
 function AwaitedComponent() {
   return (
     <StoreConsumer storeTypes={[TestStore]}>
@@ -106,6 +108,11 @@ function AwaitedComponent() {
 - No dependency but React 16.8 or higher and [tslib](https://github.com/Microsoft/tslib) for TypeScript projects
 - Strongly typed with TypeScript. As long as store types are specified, other types can be inferred so you don't have to `as` or `any` anymore!
 - (WIP) Basic SSR utilities support
+
+# Common Pitfalls
+
+- To avoid unnecessary re-renders, `StoreProvider` is designed to only re-render when the current and previous `stores` are different. For two `Store<any>[]` *a* and *b*, `a differs from b` is equivalent to `a.length === b.length && for i from 0 to a.length-1, a[i] === b[i]`.
+- Once the promise returned by `setState` resolves, it is guaranteed for components that use render props and HOC that have updated, but these using `useStore` hook will not have the guarantee. I am working on it.
 
 ## Roadmap
 
