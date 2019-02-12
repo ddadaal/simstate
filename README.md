@@ -4,9 +4,11 @@
 [![Build Status](https://img.shields.io/travis/viccrubs/simstate.svg?style=flat-square)](https://travis-ci.org/viccrubs/simstate) 
 [![Coverage Status](https://img.shields.io/coveralls/github/viccrubs/simstate.svg?style=flat-square)](https://coveralls.io/github/viccrubs/simstate?branch=master) 
 
-`simstate` is a React state management tool favoring [React Hooks](https://reactjs.org/docs/hooks-intro.html) .
+`simstate` is a React state management tool favoring [React Hooks](https://reactjs.org/docs/hooks-intro.html) and [TypeScript](https://www.typescriptlang.org/).
 
 # How to use
+
+Talk is cheap. Here is the code. :smile:
 
 ```jsx
 import React from "react";
@@ -43,7 +45,7 @@ const RootComponent = () => {
 // 3. Use `useStore` hook to get the store instance (recommended)
 
 function CounterWithHook() {
-  const store = useStore(TestStore);
+  const store = useStore(TestStore); // the type of `store` is inferred!
   return (
     <div>
       <p>Current value: {store.state.value}</p>
@@ -54,56 +56,56 @@ function CounterWithHook() {
 
 // 3.1 Use render props
 function ComponentWithRenderProps() {
-  <StoreConsumer storeTypes={[TestStore]}>
-    {({ useStore }) => {
-      const store = useStore(TestStore);
-      return (
-        <span>
-          {store.state.value}
-        </span>
-      );
-    }}
-  </StoreConsumer>
+  return (
+    <StoreConsumer storeTypes={[TestStore]}>
+      {({ useStore }) => {
+        const store = useStore(TestStore);
+        return (
+          <span>
+            {store.state.value}
+          </span>
+        );
+      }}
+    </StoreConsumer>
+  );
 }
 
 // 3.2 Use HOC
-const ComponentWithHOC = withStores(TestStore)(({ useStore }) => (
+const ComponentWithHOC = withStores(TestStore)(({ useStore }) => ( // only inject `useStore`. Use it like hooks.
   <span>{useStore(TestStore).state.value}</span>
 ));
 
 // For render props and HOC, setState can be awaited for actual component update
 function AwaitedComponent() {
-  <StoreConsumer storeTypes={[TestStore]}>
-    {({ useStore }) => {
-      const store = useStore(TestStore);
-      return (
-        <button onClick={async () => {
-          console.log(store.state.value) // 42
+  return (
+    <StoreConsumer storeTypes={[TestStore]}>
+      {({ useStore }) => { // only inject `useStore`. Use it like hooks.
+        const store = useStore(TestStore);
+        return (
+          <button onClick={async () => {
+            console.log(store.state.value) // 42
 
-          // update state via function
-          await store.setState(({ value }) => ({ value: value + 2 }));
+            // update state via function
+            await store.setState(({ value }) => ({ value: value + 2 }));
 
-          console.log(store.state.value) // 44, and the innerText of this button will also be 44
-        }}>
-          {store.state.value}
-        </button>
-      );
-    }}
-  </StoreConsumer>
+            console.log(store.state.value) // 44, and the innerText of this button will also be 44
+          }}>
+            {store.state.value}
+          </button>
+        );
+      }}
+    </StoreConsumer>
+  );
 }
 
 ```
 
 # Features
 
-- Define states and actions in a class like a React class component
-    - Update states using `setState`
-    - For `render props` and `HOC`, the promise returned by `setState` is resolved when the component is updated (the callback for `setState`); for hook usage, the promise is immediately resolved. It is being worked on.
-- Use provided stores in components with [hooks](https://reactjs.org/docs/hooks-intro.html) in state management
-    - `render props` and `HOC` are also provided for compatibilities (like using store in a class component)
-- No dependency but React 16.8 or higher
-- Full support in TypeScript. All types can be automatically inferred.
-- Basic SSR utilities support
+- Simple APIs and you just read all of them
+- No dependency but React 16.8 or higher and [tslib](https://github.com/Microsoft/tslib) for TypeScript projects
+- Strongly typed with TypeScript. As long as store types are specified, other types can be inferred so you don't have to `as` or `any` anymore!
+- (WIP) Basic SSR utilities support
 
 ## Roadmap
 
