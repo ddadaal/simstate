@@ -43,25 +43,27 @@ describe("Provider", () => {
 
     expect(wrapper.find("span").text()).toEqual("43");
 
-    wrapper.setProps({ stores: [new TestStore(43), new AnotherStore() ] });
+    wrapper.setProps({ stores: [new TestStore(43), new AnotherStore()] });
 
     expect(wrapper.find("span").text()).toEqual("43");
   });
 
   it("should not re-render if the input store hasn't changed", () => {
 
-    function Child() {
-      return (
-        <SimstateContext.Consumer>
-          {(map) => {
-            return (
-              <span>{map!.get(TestStore)!.state.value}</span>
-            );
-          }
-          }
-        </SimstateContext.Consumer>
-      );
+    class Child extends React.PureComponent {
+      render() {
+        return (
+          <SimstateContext.Consumer>
+            {(map) => {
+              return (
+                <span>{map!.get(TestStore)!.state.value}</span>
+              );
+            }}
+          </SimstateContext.Consumer>
+        );
+      }
     }
+
     class Component extends React.Component<{ store: Store<any> }> {
       render() {
         return (
@@ -82,6 +84,62 @@ describe("Provider", () => {
     wrapper.setProps({ store });
 
     expect(wrapper.find("span").text()).toEqual("42");
+
+  });
+
+  it("should support nested providers", () => {
+    class AnotherStore extends Store<{ text: string }> {
+      constructor(text: string) {
+        super();
+        this.state = { text };
+      }
+    }
+
+    function Child() {
+      return (
+        <SimstateContext.Consumer>
+          {(map) => (
+            <div>
+              <span id="TestStore">{map!.has(TestStore) ? map!.get(TestStore)!.state.value : "no"}</span>
+              <span id="AnotherStore">{map!.has(AnotherStore) ? map!.get(AnotherStore)!.state.text : "no"}</span>
+            </div>
+          )}
+        </SimstateContext.Consumer>
+      );
+    }
+
+    const test = (Parent: React.ComponentType, testStore: string, anotherStore: string) => {
+      const wrapper = mount(<Parent />);
+
+      expect(wrapper.find("#TestStore").text()).toEqual(testStore);
+      expect(wrapper.find("#AnotherStore").text()).toEqual(anotherStore);
+    };
+
+    const Parent1 = () => (
+      <StoreProvider stores={[new TestStore(42)]}>
+        <Child />
+      </StoreProvider>
+    );
+
+    test(Parent1, "42", "no");
+
+    const Parent2 = () => (
+      <StoreProvider stores={[new AnotherStore("hahaha")]}>
+        <Parent1 />
+      </StoreProvider>
+    );
+
+    test(Parent2, "42", "hahaha");
+
+    const Parent3 = () => (
+      <StoreProvider stores={[new AnotherStore("outter")]}>
+        <StoreProvider stores={[new AnotherStore("inner")]}>
+          <Child />
+        </StoreProvider>
+      </StoreProvider>
+    );
+
+    test(Parent3, "no", "inner");
 
   });
 

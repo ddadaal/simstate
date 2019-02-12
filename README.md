@@ -107,12 +107,14 @@ function AwaitedComponent() {
 - Simple APIs and you just read all of them
 - No dependency but React 16.8 or higher and [tslib](https://github.com/Microsoft/tslib) for TypeScript projects
 - Strongly typed with TypeScript. As long as store types are specified, other types can be inferred so you don't have to `as` or `any` anymore!
+- Nested providers. Inner provided stores will override outer stores.
 - (WIP) Basic SSR utilities support
 
 # Common Pitfalls
 
-- To avoid unnecessary re-renders, `StoreProvider` is designed to only re-render when the current and previous `stores` are different. For two `Store<any>[]` *a* and *b*, `a differs from b` is equivalent to `a.length === b.length && for i from 0 to a.length-1, a[i] === b[i]`.
+- Under the hood, the provided stores will be stored in a `Map` with store's constructor as the key and store instance itself as the value. To avoid unnecessary re-renders, `StoreProvider` is designed to cache inner context and only reassign context only if the provided maps are different. Two maps are different if they have different length, or contains different stores. 
 - Once the promise returned by `setState` resolves, it is guaranteed for components that use render props and HOC that have updated, but these using `useStore` hook will not have the guarantee. I am working on it.
+
 
 ## Roadmap
 

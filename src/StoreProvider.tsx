@@ -10,48 +10,62 @@ interface Props {
   children: React.ReactNode;
 }
 
-// interface State {
-//   map: ISimstateContext;
-// }
+interface State {
+  map: ISimstateContext;
+}
 
-function arrayEquals<T>(array1: T[], array2: T[]) {
-  const len = array1.length;
-  if (len !== array2.length) {
+function contextEqual(a: ISimstateContext, b: ISimstateContext) {
+  if (a.size !== b.size) {
     return false;
   }
-
-  for (let i = 0; i < len; i++) {
-    if (array1[i] !== array2[i]) {
+  for (const [key, val] of a) {
+    if (b.get(key) !== val) {
       return false;
     }
   }
 
   return true;
-
 }
 
-function constructMap(stores: Store<any>[]) {
-  const map: ISimstateContext = new Map();
-  stores.forEach((store) => {
-    map.set(store.constructor as StoreType<any>, store);
-  });
-  return map;
+interface InnerProps {
+  currentMap: ISimstateContext;
 }
 
-export default class StoreProvider extends React.Component<Props> {
+class StoreProvider extends React.Component<InnerProps, State> {
 
-  shouldComponentUpdate(prevProps: Props) {
-    return !arrayEquals(prevProps.stores, this.props.stores);
+  componentDidUpdate() {
+    if (!contextEqual(this.props.currentMap, this.state.map)) {
+      this.setState({ map: this.props.currentMap });
+    }
   }
 
+  state = { map: this.props.currentMap };
+
   render() {
-
-    const map = constructMap(this.props.stores);
-
     return (
-      <SimstateContext.Provider value={map}>
+      <SimstateContext.Provider value={this.state.map}>
         {this.props.children}
       </SimstateContext.Provider>
     );
   }
 }
+
+function constructMap(prev: ISimstateContext | undefined, stores: Store<any>[]): ISimstateContext {
+  const map: ISimstateContext = new Map(prev!); // new Map(undefined) will work
+
+  for (const store of stores) {
+    map.set(store.constructor as StoreType<any>, store);
+  }
+
+  return map;
+}
+
+export default (props: Props) => (
+  <SimstateContext.Consumer>
+    {(map) => (
+      <StoreProvider currentMap={constructMap(map, props.stores)}>
+        {props.children}
+      </StoreProvider>
+    )}
+  </SimstateContext.Consumer>
+);
