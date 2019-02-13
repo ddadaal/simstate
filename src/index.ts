@@ -7,6 +7,9 @@ export { StoreProvider };
 import useStore from "./useStore";
 export { useStore };
 
+import useStores from "./useStores";
+export { useStores };
+
 import StoreConsumer from "./StoreConsumer";
 export { StoreConsumer };
 
