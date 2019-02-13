@@ -4,11 +4,14 @@ export { StoreType, Store };
 import StoreProvider from "./StoreProvider";
 export { StoreProvider };
 
-import useStore from "./consumer/useStore";
+import useStore from "./useStore";
 export { useStore };
 
-import StoreConsumer, { WithStoresProps } from "./consumer/StoreConsumer";
-export { StoreConsumer, WithStoresProps };
+import StoreConsumer from "./StoreConsumer";
+export { StoreConsumer };
 
-import withStores from "./consumer/withStores";
+import withStores from "./withStores";
 export { withStores };
+
+import { WithStoresProps } from "./common";
+export { WithStoresProps };

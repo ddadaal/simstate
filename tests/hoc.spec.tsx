@@ -1,9 +1,8 @@
-import { TestStore } from "./common";
+import { TestStore, AnotherStore } from "./common";
 import React from "react";
 import { mount } from "enzyme";
-import withStores from "../src/consumer/withStores";
+import withStores from "../src/withStores";
 import StoreProvider from "../src/StoreProvider";
-import { Store } from "../src";
 
 describe("HOC", () => {
 
@@ -70,17 +69,13 @@ describe("HOC", () => {
 
   it("should report error when using a store that is not specified", () => {
 
-    class AnotherStore extends Store<{}> {
-      state = {};
-    }
-
     const Component = withStores(AnotherStore)(({ useStore }) => {
       useStore(TestStore);
       return <div>"never reach here!"</div>;
     });
 
     expect(() => mount(
-      <StoreProvider stores={[new AnotherStore()]}>
+      <StoreProvider stores={[new AnotherStore("no")]}>
         <Component/>
       </StoreProvider>,
     ));

@@ -1,20 +1,20 @@
 import React from "react";
-import { StoreType } from "..";
-import StoreConsumer, { WithStoresProps } from "./StoreConsumer";
+import { StoreType } from ".";
+import StoreConsumer from "./StoreConsumer";
+import { Omit, WithStoresProps } from "./common";
 
-declare type Omit<T, K extends keyof any> = T extends any ? Pick<T, Exclude<keyof T, K>> : never;
-
-export default function withStores(...storeTypes: Array<StoreType<any>>) {
+export default function withStores<T extends StoreType<any>[]>(...storeTypes: T) {
   return <P extends {}>
   (WrappedComponent: React.ComponentType<P & WithStoresProps>) => {
 
     const Component = (props: P) => (
       <StoreConsumer storeTypes={storeTypes}>
-        {({ useStore }) => {
+        {({ useStore, useStores }) => {
 
           return (
             <WrappedComponent
               useStore={useStore}
+              useStores={useStores}
               {...props}
             />
           );
@@ -22,6 +22,6 @@ export default function withStores(...storeTypes: Array<StoreType<any>>) {
       </StoreConsumer>
     );
 
-    return Component as any as React.ComponentType<Omit<P, keyof WithStoresProps>>;
+    return Component as any as React.ComponentType<Omit<P, keyof T>>;
   };
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { TestStore } from "./common";
+import { TestStore, AnotherStore } from "./common";
 import { StoreProvider, Store } from "../src";
 import { SimstateContext } from "../src/StoreProvider";
 import { mount } from "enzyme";
@@ -33,8 +33,6 @@ describe("Provider", () => {
       }
     }
 
-    class AnotherStore extends Store<{}> { }
-
     const wrapper = mount(<Component stores={[new TestStore(42)]} />);
 
     expect(wrapper.find("span").text()).toEqual("42");
@@ -43,7 +41,7 @@ describe("Provider", () => {
 
     expect(wrapper.find("span").text()).toEqual("43");
 
-    wrapper.setProps({ stores: [new TestStore(43), new AnotherStore()] });
+    wrapper.setProps({ stores: [new TestStore(43), new AnotherStore("haha")] });
 
     expect(wrapper.find("span").text()).toEqual("43");
   });
@@ -88,12 +86,6 @@ describe("Provider", () => {
   });
 
   it("should support nested providers", () => {
-    class AnotherStore extends Store<{ text: string }> {
-      constructor(text: string) {
-        super();
-        this.state = { text };
-      }
-    }
 
     function Child() {
       return (

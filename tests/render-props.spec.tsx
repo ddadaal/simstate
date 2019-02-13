@@ -2,7 +2,7 @@ import React from "react";
 import { StoreConsumer } from "../src";
 import { mount } from "enzyme";
 import StoreProvider from "../src/StoreProvider";
-import { TestStore } from "./common";
+import { TestStore, AnotherStore } from "./common";
 
 describe("Render props", () => {
 
@@ -12,6 +12,20 @@ describe("Render props", () => {
         const store = useStore(TestStore);
         return (
           <span>{store.state.value}</span>
+        );
+      }}
+    </StoreConsumer>
+  );
+
+  const MultiStoreComponent = () => (
+    <StoreConsumer storeTypes={[TestStore, AnotherStore]}>
+      {({ useStores }) => {
+        const [store, another] = useStores(TestStore, AnotherStore);
+        return (
+          <div>
+            <span id="test">{store.state.value}</span>
+            <span id="another">{another.state.text}</span>
+          </div>
         );
       }}
     </StoreConsumer>
@@ -27,6 +41,18 @@ describe("Render props", () => {
     );
 
     expect(wrapper.find("span").text()).toBe("42");
+  });
+
+  it("should inject multiple stores", () => {
+
+    const wrapper = mount(
+      <StoreProvider stores={[new TestStore(42), new AnotherStore("text")]}>
+        <MultiStoreComponent />
+      </StoreProvider>,
+    );
+
+    expect(wrapper.find("#test").text()).toBe("42");
+    expect(wrapper.find("#another").text()).toBe("text");
   });
 
   it("should update the number after setState", async () => {
@@ -47,6 +73,33 @@ describe("Render props", () => {
     await store.setState(({ value }) => ({ value: value + 1 }));
 
     expect(wrapper.find("span").text()).toBe("44");
+
+  });
+
+  it("should update component when one of multiple injected stores setState", async () => {
+
+    const test = new TestStore(42);
+    const another = new AnotherStore("text");
+
+    const wrapper = mount(
+      <StoreProvider stores={[test, another]}>
+        <MultiStoreComponent />
+      </StoreProvider>,
+    );
+
+    const expectValues = (test: number, another: string) => {
+      expect(wrapper.find("#test").text()).toBe(test + "");
+      expect(wrapper.find("#another").text()).toBe(another);
+    };
+
+    expectValues(42, "text");
+
+    await another.setState({  });
+
+    expectValues(42, "text");
+
+    await another.setState({ text: "123" });
+    expectValues(42, "123");
 
   });
 

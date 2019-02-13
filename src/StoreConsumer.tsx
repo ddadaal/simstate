@@ -1,11 +1,7 @@
 import React from "react";
-import { StoreType } from "..";
-import { SimstateContext, ISimstateContext } from "../StoreProvider";
-import { noProviderError, notProvidedError } from "../Error";
-
-export interface WithStoresProps {
-  useStore: <ST extends StoreType<any>>(storeType: ST) => InstanceType<ST>;
-}
+import { StoreType } from ".";
+import { SimstateContext, ISimstateContext } from "./StoreProvider";
+import { noProviderError, notProvidedError, WithStoresProps, Instances } from "./common";
 
 interface RealProps {
   storeTypes: StoreType<any>[];
@@ -77,6 +73,10 @@ export default class StoreConsumer extends React.Component<RealProps, State> {
     return store;
   }
 
+  useStores = <T extends StoreType<any>[]>(...storeTypes: T): Instances<T> => {
+    return storeTypes.map((storeType) => this.useStore(storeType)) as Instances<T>;
+  }
+
   render() {
     return (
       <SimstateContext.Consumer>
@@ -84,6 +84,7 @@ export default class StoreConsumer extends React.Component<RealProps, State> {
           this.createInstances(map);
           return this.props.children({
             useStore: this.useStore,
+            useStores: this.useStores,
           });
         }}
       </SimstateContext.Consumer>

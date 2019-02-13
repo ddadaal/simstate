@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+
+<a name="1.3.0"></a>
+# [1.3.0](https://github.com/viccrubs/simstate/compare/v1.2.0...v1.3.0) (2019-02-13)
+
+
+### Features
+
+* Adds strongly-typed `useStores` hook and `useStores` function in render-props and HOC to simplify multiple store injection
+
+### Others
+
+* (Source code) Flat directory structure and reorganize exports
+
 <a name="1.2.0"></a>
 # [1.2.0](https://github.com/viccrubs/simstate/compare/v1.1.1...v1.2.0) (2019-02-12)
 

@@ -15,3 +15,14 @@ export class TestStore extends Store<IStore> {
     this.setState({ value: this.state.value + 1 });
   }
 }
+
+interface IAnotherStore {
+  text: string;
+}
+
+export class AnotherStore extends Store<IAnotherStore> {
+  constructor(text: string) {
+    super();
+    this.state = { text };
+  }
+}

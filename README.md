@@ -28,13 +28,16 @@ class TestStore extends Store<IStore> {
   }
 }
 
+class AnotherStore extends Store<{}> { }
+
 // 2. Wrap your component with `StoreProvider`
 
 const store = new TestStore();
+const anotherStore = new AnotherStore();
 
 const RootComponent = () => {
   return (
-    <StoreProvider stores={[store]}>
+    <StoreProvider stores={[store, anotherStore]}>
       <CounterWithHook />
       <ComponentWithRenderProps />
       <ComponentWithHOC />
@@ -42,7 +45,7 @@ const RootComponent = () => {
   );
 };
 
-// 3. Use `useStore` hook to get the store instance (recommended)
+// 3. Use `useStore` hook to get one single store instance (recommended)
 
 function CounterWithHook() {
   const store = useStore(TestStore); // the type of `store` is inferred!
@@ -54,12 +57,27 @@ function CounterWithHook() {
   );
 }
 
+// 3. Use `useStores` hook to get multiple store instances with each type being inferred (yah)
+// Perfer this one if you want multiple stores in one component
+
+function CounterWithStoresHook() {
+  const [store, another] = useStores(TestStore, AnotherStore); 
+  // store is inferred with type TestStore whilst another is inferred with type AnotherStore
+    return (
+    <div>
+      <p>Current value: {store.state.value}</p>
+      <button onClick={() => store.increment()}>Increment</button>
+    </div>
+  );
+}
+
 // 3.1 Use render props
 function ComponentWithRenderProps() {
   return (
     <StoreConsumer storeTypes={[TestStore]}>
-      {({ useStore }) => {
-        const store = useStore(TestStore);
+      {({ useStore, useStores }) => { // inject only these two method
+        const store = useStore(TestStore); // useStore for single store
+        const [testStore, anotherStore] = useStores(TestStore, AnotherStore); // useStores for multiple stores
         return (
           <span>
             {store.state.value}
@@ -71,8 +89,9 @@ function ComponentWithRenderProps() {
 }
 
 // 3.2 Use HOC
-const ComponentWithHOC = withStores(TestStore)(({ useStore }) => ( // only inject `useStore`. Use it like hooks.
+const ComponentWithHOC = withStores(TestStore)(({ useStore, useStores }) => (
   <span>{useStore(TestStore).state.value}</span>
+  <span>{useStores(AnotherStore)[0].constructor.name}</span>
 ));
 
 // Once the promise returned by `setState` resolves,
@@ -81,7 +100,7 @@ const ComponentWithHOC = withStores(TestStore)(({ useStore }) => ( // only injec
 function AwaitedComponent() {
   return (
     <StoreConsumer storeTypes={[TestStore]}>
-      {({ useStore }) => { // only inject `useStore`. Use it like hooks.
+      {({ useStore }) => { 
         const store = useStore(TestStore);
         return (
           <button onClick={async () => {
@@ -106,7 +125,7 @@ function AwaitedComponent() {
 
 - Simple APIs and you just read all of them
 - No dependency but React 16.8 or higher and [tslib](https://github.com/Microsoft/tslib) for TypeScript projects
-- Strongly typed with TypeScript. As long as store types are specified, other types can be inferred so you don't have to `as` or `any` anymore!
+- Strongly typed with TypeScript. All types can be inferred so you don't have to `as` or `any` anymore!
 - Nested providers. Inner provided stores will override outer stores.
 - (WIP) Basic SSR utilities support
 

@@ -1,7 +1,7 @@
-import { StoreType } from "..";
-import { SimstateContext } from "../StoreProvider";
+import { StoreType } from ".";
+import { SimstateContext } from "./StoreProvider";
 import { useContext, useState, useRef, useLayoutEffect } from "react";
-import { noProviderError, notProvidedError } from "../Error";
+import { noProviderError, notProvidedError } from "./common";
 
 export default function useStore<ST extends StoreType<any>>(storeType: ST) {
   const providedStores = useContext(SimstateContext);
