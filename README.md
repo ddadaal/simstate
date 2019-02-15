@@ -143,7 +143,12 @@ function AwaitedComponent() {
 - [X] Add test
 - [X] Achieve high test coverage
 - [X] Implement `setState` promise resolve after component update for hook use
+- [ ] [Partial observer](https://github.com/viccrubs/simstate/blob/partial-observer/partial-observer-proposal.md)
 - [ ] SSR utilities and its example
+
+# Related Articles
+
+Why I write this library: [Simstate and Why](https://viccrubs.me/articles/simstate-and-why/en)
 
 # Credits
 
