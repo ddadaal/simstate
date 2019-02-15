@@ -1,9 +1,16 @@
-import { StoreType } from ".";
+import { StoreType, Store } from ".";
 import { SimstateContext } from "./StoreProvider";
 import { useContext, useState, useRef, useLayoutEffect } from "react";
-import { noProviderError, notProvidedError } from "./common";
+import { noProviderError, notProvidedError, Dep } from "./common";
 
-export default function useStore<ST extends StoreType<any>>(storeType: ST) {
+/**
+ * Get a store and observe their changes.
+ * @param storeType the type of the store to be injected
+ */
+export default function useStore<ST extends StoreType<any>>(
+  storeType: ST,
+  deps: Dep<ST>[] = [],
+) {
   const providedStores = useContext(SimstateContext);
 
   if (!providedStores) {
@@ -23,7 +30,7 @@ export default function useStore<ST extends StoreType<any>>(storeType: ST) {
   const { current: listener } = useRef(() => update({}));
 
   useLayoutEffect(() => { // use layout effect to priorize subscription to location update in the top
-    store.subscribe(listener);
+    store.subscribe(listener, deps);
 
     return () => {
       store.unsubscribe(listener);

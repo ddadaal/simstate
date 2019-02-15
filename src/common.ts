@@ -17,3 +17,9 @@ export interface WithStoresProps {
   useStore: <ST extends StoreType<any>>(storeType: ST) => InstanceType<ST>;
   useStores: <T extends StoreType<any>[]>(...storeTypes: T) => Instances<T>;
 }
+
+export type Dep<T extends StoreType<any>> =
+  T extends StoreType<infer S>
+  ? (keyof S)
+  : never
+  ;
