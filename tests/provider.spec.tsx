@@ -20,14 +20,27 @@ describe("Provider", () => {
   });
 
   it("should re-render when input stores have changed", () => {
+
+    class Child extends React.PureComponent {
+      render() {
+        return (
+          <SimstateContext.Consumer>
+            {(map) => {
+              return (
+                <span>{map!.get(TestStore)!.state.value}</span>
+              );
+            }}
+          </SimstateContext.Consumer>
+        );
+      }
+    }
+
     class Component extends React.Component<{ stores: Store<any>[] }> {
 
       render() {
         return (
           <StoreProvider stores={this.props.stores}>
-            <SimstateContext.Consumer>
-              {(map) => <span>{map!.get(TestStore)!.state.value}</span>}
-            </SimstateContext.Consumer>
+            <Child />
           </StoreProvider>
         );
       }

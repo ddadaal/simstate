@@ -1,4 +1,4 @@
-import React, { createContext } from "react";
+import React, { createContext, useState, useContext, useLayoutEffect } from "react";
 import { Store, StoreType } from ".";
 
 export type ISimstateContext = Map<StoreType<any>, Store<any>>;
@@ -8,10 +8,6 @@ export const SimstateContext = createContext<ISimstateContext | undefined>(undef
 interface Props {
   stores: Store<any>[];
   children: React.ReactNode;
-}
-
-interface State {
-  map: ISimstateContext;
 }
 
 function contextEqual(a: ISimstateContext, b: ISimstateContext) {
@@ -27,29 +23,6 @@ function contextEqual(a: ISimstateContext, b: ISimstateContext) {
   return true;
 }
 
-interface InnerProps {
-  currentMap: ISimstateContext;
-}
-
-class StoreProvider extends React.Component<InnerProps, State> {
-
-  componentDidUpdate() {
-    if (!contextEqual(this.props.currentMap, this.state.map)) {
-      this.setState({ map: this.props.currentMap });
-    }
-  }
-
-  state = { map: this.props.currentMap };
-
-  render() {
-    return (
-      <SimstateContext.Provider value={this.state.map}>
-        {this.props.children}
-      </SimstateContext.Provider>
-    );
-  }
-}
-
 function constructMap(prev: ISimstateContext | undefined, stores: Store<any>[]): ISimstateContext {
   const map: ISimstateContext = new Map(prev!); // new Map(undefined) will work
 
@@ -60,12 +33,60 @@ function constructMap(prev: ISimstateContext | undefined, stores: Store<any>[]):
   return map;
 }
 
-export default (props: Props) => (
-  <SimstateContext.Consumer>
-    {(map) => (
-      <StoreProvider currentMap={constructMap(map, props.stores)}>
-        {props.children}
-      </StoreProvider>
-    )}
-  </SimstateContext.Consumer>
-);
+export default function StoreProvider({ stores, children }: Props) {
+  const context = useContext(SimstateContext);
+
+  const currentMap = constructMap(context, stores);
+
+  const [map, setMap] = useState(currentMap);
+
+  useLayoutEffect(() => {
+    if (!contextEqual(map, currentMap)) {
+      setMap(currentMap);
+    }
+  });
+
+  return (
+    <SimstateContext.Provider value={map}>
+      {children}
+    </SimstateContext.Provider>
+  );
+
+}
+
+// interface InnerProps {
+//   currentMap: ISimstateContext;
+// }
+
+// interface State {
+//   map: ISimstateContext;
+// }
+
+// class StoreProvider extends React.Component<InnerProps, State> {
+
+//   componentDidUpdate() {
+//     if (!contextEqual(this.props.currentMap, this.state.map)) {
+//       this.setState({ map: this.props.currentMap });
+//     }
+//   }
+
+//   state = { map: this.props.currentMap };
+
+//   render() {
+//     return (
+//       <SimstateContext.Provider value={this.state.map}>
+//         {this.props.children}
+//       </SimstateContext.Provider>
+//     );
+//   }
+// }
+
+// export default (props: Props) => (
+//   <SimstateContext.Consumer>
+//     {(map) => (
+//       <StoreProvider currentMap={constructMap(map, props.stores)}>
+//         {props.children}
+//       </StoreProvider>
+//     )}
+//   </SimstateContext.Consumer>
+// );
