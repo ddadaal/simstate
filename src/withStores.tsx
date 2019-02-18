@@ -1,7 +1,6 @@
 import React from "react";
-import { StoreType } from ".";
 import StoreConsumer from "./StoreConsumer";
-import { ObserveTarget, Omit, ObservedStoreInstance, ObserveTargetTuple, InjectedInstances } from "./types";
+import { Omit, ObserveTargetTuple, InjectedInstances } from "./types";
 
 interface InjectedProps<T extends ObserveTargetTuple> {
   stores: InjectedInstances<T>;

@@ -3,6 +3,7 @@ import { StoreConsumer } from "../src";
 import { mount } from "enzyme";
 import StoreProvider from "../src/StoreProvider";
 import { TestStore, AnotherStore } from "./common";
+import { targets } from "../src/common";
 
 describe("Render props", () => {
 
@@ -17,7 +18,7 @@ describe("Render props", () => {
   );
 
   const MultiStoreComponent = () => (
-    <StoreConsumer targets={[TestStore, AnotherStore]}>
+    <StoreConsumer targets={[TestStore, targets(AnotherStore, ["text"])]}>
       {(store, another) => {
         return (
           <div>

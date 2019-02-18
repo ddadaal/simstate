@@ -20,7 +20,7 @@ export type NormalizedObserveTarget<T extends ObserveTarget> =
 
 export type ObservedStoreType<P extends ObserveTarget> =
   P extends StoreType<any> ? P
-  : P extends [infer S, Dep<infer S>[]]
+  : P extends [infer S, Dep[]]
   ? S extends StoreType<any> ? S
   : never
   : never

@@ -3,10 +3,11 @@ import React from "react";
 import { mount } from "enzyme";
 import withStores from "../src/withStores";
 import StoreProvider from "../src/StoreProvider";
+import { targets } from "../src/common";
 
 describe("HOC", () => {
 
-  const Component = withStores(TestStore)(({ stores: [ testStore ] }) => (
+  const Component = withStores(TestStore, targets(AnotherStore, ["text"]))(({ stores: [testStore, anotherStore] }) => (
     <span>{testStore.state.value}</span>
   ));
 

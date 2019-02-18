@@ -62,6 +62,8 @@ export default class StoreConsumer<T extends ObserveTargetTuple>
 
       return store;
     }) as InjectedInstances<T>;
+
+    return this.instances;
   }
 
   render() {
