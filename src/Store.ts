@@ -1,17 +1,16 @@
-import { Dep } from "./common";
+import { Dep } from "./types";
 
 type Observer = (() => void) | (() => Promise<void>);
 
-interface InternalObserver {
-  observer: Observer;
-  deps: Array<Dep<any>> | undefined;
+interface ObserverInfo {
+  deps: Array<Dep> | undefined;
 }
 
 export default class Store<State extends object> {
 
   state: State;
 
-  private observers: InternalObserver[] = [];
+  private observers: Map<Observer, ObserverInfo> = new Map();
 
   async setState(
     updater: Partial<State> | ((prevState: State) => State),
@@ -19,7 +18,7 @@ export default class Store<State extends object> {
 
     const nextState = typeof updater === "function" ? updater(this.state) : updater;
 
-    const changedStates = Object.keys(nextState)
+    const changedStates: PropertyKey[] = Object.keys(nextState)
       .filter((key) => (this.state as any)[key] !== (nextState as any)[key]);
 
     this.state = {
@@ -29,21 +28,21 @@ export default class Store<State extends object> {
 
     const promises = [];
 
-    for (const observer of this.observers) {
-      if (!observer.deps || observer.deps.some((dep) => changedStates.includes(dep))) {
-        promises.push(observer.observer());
+    for (const [observer, info] of this.observers) {
+      if (!info.deps || info.deps.some((dep) => changedStates.includes(dep))) {
+        promises.push(observer());
       }
     }
 
     return Promise.all(promises);
   }
 
-  subscribe(fn: Observer, deps?: Dep<any>[]) {
-    this.observers.push({ observer: fn, deps });
+  subscribe(fn: Observer, deps?: Dep[]) {
+    this.observers.set(fn , { deps });
   }
 
   unsubscribe(fn: Observer) {
-    this.observers = this.observers.filter((ob) => ob.observer !== fn);
+    this.observers.delete(fn);
   }
 
   // afterHydration() {
@@ -51,4 +50,4 @@ export default class Store<State extends object> {
   // }
 }
 
-export type StoreType<T extends object, S extends Store<T> = Store<T>> = new (...args: any[]) => S;
+export type StoreType<T extends object> = new (...args: any[]) => Store<T>;

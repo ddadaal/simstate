@@ -1,40 +1,22 @@
-import { StoreType, Store } from ".";
 import { useContext, useState, useRef, useLayoutEffect } from "react";
-import { noProviderError, notProvidedError, Instances, Dep } from "./common";
+import { noProviderError, notProvidedError } from "./common";
 import { SimstateContext } from "./StoreProvider";
-
-export function makeTuple<T extends StoreType<any>>(storeType: T, deps: Dep<T>[]): [T, Dep<T>[]] {
-  return [storeType, deps];
-}
-
-type Param<T extends StoreType<any>> =
-  | T
-  | [T, Dep<T>[]]
-  ;
-
-type StoreInstanceType<P extends Param<any>> =
-  P extends StoreType<any> ? InstanceType<P>
-  : P extends [infer S, Dep<infer S>[]]
-    ? S extends StoreType<any> ? InstanceType<S>
-    : never
-  : never
-  ;
-
-type InjectedInstances<Params extends Param<any>[]> = { [P in keyof Params]: StoreInstanceType<Params[P]> };
+import { InjectedInstances, ObserveTarget, ObserveTargetTuple } from "./types";
 
 /**
  * Get stores and observe their changes.
  * @param storeTypes the type of the stores to inject
  */
-export default function useStores<Params extends Param<any>[]>(...deps: Params): InjectedInstances<Params> {
+export default function useStores
+  <S extends ObserveTargetTuple>(...targets: S): InjectedInstances<S> {
   const providedStores = useContext(SimstateContext);
 
   if (!providedStores) {
     throw noProviderError();
   }
 
-  const stores = deps.map((dep: Param<StoreType<any>>) => {
-    const storeType = typeof dep === "function" ? dep : dep[0];
+  const stores = targets.map((target: ObserveTarget) => {
+    const storeType = typeof target === "function" ? target : target[0];
     const instance = providedStores.get(storeType);
     if (!instance) {
       throw notProvidedError(storeType);
@@ -56,11 +38,5 @@ export default function useStores<Params extends Param<any>[]>(...deps: Params):
     };
   }, stores);
 
-  return stores as any;
+  return stores as InjectedInstances<S>;
 }
-
-class AStore extends Store<{ aStoreProp: number }> { }
-class BStore extends Store<{ bStoreProps: number }> { }
-
-const [aStore] = useStores(AStore);
-const [bStore, a] = useStores([BStore, ["bStoreProps"]], AStore);

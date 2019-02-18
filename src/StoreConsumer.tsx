@@ -1,22 +1,23 @@
 import React from "react";
-import { StoreType } from ".";
 import { SimstateContext, ISimstateContext } from "./StoreProvider";
-import { noProviderError, notProvidedError, WithStoresProps, Instances } from "./common";
+import { noProviderError, notProvidedError, normalizeTarget } from "./common";
+import { InjectedInstances, ObserveTargetTuple } from "./types";
 
-interface RealProps {
-  storeTypes: StoreType<any>[];
-  children: (props: WithStoresProps) => React.ReactNode;
+interface Props<T extends ObserveTargetTuple> {
+  targets: T;
+  children(...instances: InjectedInstances<T>): React.ReactNode;
 }
 
 interface State {
 
 }
 
-export default class StoreConsumer extends React.Component<RealProps, State> {
+export default class StoreConsumer<T extends ObserveTargetTuple>
+  extends React.Component<Props<T>, State> {
 
   state = {};
   unmounted = false;
-  storeMap: ISimstateContext = new Map();
+  instances: InjectedInstances<T>;
 
   componentWillUnmount() {
     this.unmounted = true;
@@ -24,7 +25,7 @@ export default class StoreConsumer extends React.Component<RealProps, State> {
   }
 
   private unsubscribe() {
-    Array.from(this.storeMap.values()).forEach((store) => {
+    this.instances.forEach((store) => {
       store.unsubscribe(this.update);
     });
   }
@@ -48,33 +49,19 @@ export default class StoreConsumer extends React.Component<RealProps, State> {
       throw noProviderError();
     }
 
-    this.storeMap.clear();
+    this.instances = this.props.targets.map((t) => {
+      const [storeType, deps] = normalizeTarget(t);
 
-    this.props.storeTypes.forEach((storeType) => {
       const store = map.get(storeType);
       if (!store) {
         throw notProvidedError(storeType);
       }
 
       store.unsubscribe(this.update);
-      store.subscribe(this.update);
+      store.subscribe(this.update, deps);
 
-      this.storeMap.set(storeType, store);
-    });
-  }
-
-  useStore = <ST extends StoreType<any>>(storeType: ST) => {
-    const store = this.storeMap.get(storeType) as InstanceType<ST> | undefined;
-
-    if (!store) {
-      throw notProvidedError(storeType);
-    }
-
-    return store;
-  }
-
-  useStores = <T extends StoreType<any>[]>(...storeTypes: T): Instances<T> => {
-    return storeTypes.map((storeType) => this.useStore(storeType)) as Instances<T>;
+      return store;
+    }) as InjectedInstances<T>;
   }
 
   render() {
@@ -82,10 +69,7 @@ export default class StoreConsumer extends React.Component<RealProps, State> {
       <SimstateContext.Consumer>
         {(map) => {
           this.createInstances(map);
-          return this.props.children({
-            useStore: this.useStore,
-            useStores: this.useStores,
-          });
+          return this.props.children(...(this.instances as any));
         }}
       </SimstateContext.Consumer>
     );

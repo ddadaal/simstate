@@ -1,7 +1,8 @@
-import { StoreType, Store } from ".";
+import { StoreType } from ".";
 import { SimstateContext } from "./StoreProvider";
 import { useContext, useState, useRef, useLayoutEffect } from "react";
-import { noProviderError, notProvidedError, Dep } from "./common";
+import { noProviderError, notProvidedError } from "./common";
+import { Dep } from "./types";
 
 /**
  * Get a store and observe their changes.
@@ -9,7 +10,7 @@ import { noProviderError, notProvidedError, Dep } from "./common";
  */
 export default function useStore<ST extends StoreType<any>>(
   storeType: ST,
-  deps: Dep<ST>[] = [],
+  deps?: Dep<ST>[],
 ) {
   const providedStores = useContext(SimstateContext);
 

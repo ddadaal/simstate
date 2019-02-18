@@ -6,8 +6,8 @@ import StoreProvider from "../src/StoreProvider";
 
 describe("HOC", () => {
 
-  const Component = withStores(TestStore)(({ useStore }) => (
-    <span>{useStore(TestStore).state.value}</span>
+  const Component = withStores(TestStore)(({ stores: [ testStore ] }) => (
+    <span>{testStore.state.value}</span>
   ));
 
   it("should render with current store state", () => {
@@ -65,20 +65,6 @@ describe("HOC", () => {
     // tslint:disable-next-line
     expect(store["observers"]).toHaveLength(0);
 
-  });
-
-  it("should report error when using a store that is not specified", () => {
-
-    const Component = withStores(AnotherStore)(({ useStore }) => {
-      useStore(TestStore);
-      return <div>"never reach here!"</div>;
-    });
-
-    expect(() => mount(
-      <StoreProvider stores={[new AnotherStore("no")]}>
-        <Component/>
-      </StoreProvider>,
-    ));
   });
 
   it("should report error when using a store that is not provided", () => {

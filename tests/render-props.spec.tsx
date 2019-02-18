@@ -7,9 +7,8 @@ import { TestStore, AnotherStore } from "./common";
 describe("Render props", () => {
 
   const Component = () => (
-    <StoreConsumer storeTypes={[TestStore]}>
-      {({ useStore }) => {
-        const store = useStore(TestStore);
+    <StoreConsumer targets={[TestStore]}>
+      {(store) => {
         return (
           <span>{store.state.value}</span>
         );
@@ -18,9 +17,8 @@ describe("Render props", () => {
   );
 
   const MultiStoreComponent = () => (
-    <StoreConsumer storeTypes={[TestStore, AnotherStore]}>
-      {({ useStores }) => {
-        const [store, another] = useStores(TestStore, AnotherStore);
+    <StoreConsumer targets={[TestStore, AnotherStore]}>
+      {(store, another) => {
         return (
           <div>
             <span id="test">{store.state.value}</span>
@@ -124,26 +122,6 @@ describe("Render props", () => {
     // tslint:disable-next-line
     expect(store["observers"]).toHaveLength(0);
 
-  });
-
-  it("should report error when using a store that is not specified", () => {
-    console.error = () => { };
-
-    const Component = () => (
-      <StoreConsumer storeTypes={[]}>
-        {({ useStore }) => {
-          useStore(TestStore);
-          return "never reach here!";
-        }}
-      </StoreConsumer>
-    );
-
-    // provided but not specified
-    expect(() => mount(
-      <StoreProvider stores={[new TestStore(42)]}>
-        <Component />
-      </StoreProvider>,
-    )).toThrowError();
   });
 
   it("should report error when using a store that is not provided", () => {

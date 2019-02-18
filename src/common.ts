@@ -1,4 +1,5 @@
 import { StoreType } from ".";
+import { ObserveTarget, Dep, NormalizedObserveTarget } from "./types";
 
 export function noProviderError(): Error {
   return new Error("Wrap your component in a StoreProvider.");
@@ -8,18 +9,14 @@ export function notProvidedError(storeType: StoreType<any>): Error {
   return new Error(`${storeType.name} has not been provided or specified.`);
 }
 
-// @ts-ignore
-export type Instances<T extends StoreType<any>[]> = { [K in keyof T]: InstanceType<T[K]> };
-
-export type Omit<T, K extends keyof any> = T extends any ? Pick<T, Exclude<keyof T, K>> : never;
-
-export interface WithStoresProps {
-  useStore: <ST extends StoreType<any>>(storeType: ST) => InstanceType<ST>;
-  useStores: <T extends StoreType<any>[]>(...storeTypes: T) => Instances<T>;
+export function normalizeTarget<T extends ObserveTarget>(target: T): NormalizedObserveTarget<T> {
+  if (typeof target === "function") {
+    return [target as any, undefined];
+  } else {
+    return target as any;
+  }
 }
 
-export type Dep<T extends StoreType<any>> =
-  T extends StoreType<infer S>
-  ? (keyof S)
-  : never
-  ;
+export function targets<T extends StoreType<any>>(storeType: T, deps: Dep<T>[]): [T, Dep<T>[]] {
+  return [storeType, deps];
+}
