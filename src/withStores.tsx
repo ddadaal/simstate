@@ -1,21 +1,15 @@
 import React from "react";
-import StoreConsumer from "./StoreConsumer";
-import { Omit, ObserveTargetTuple, InjectedInstances } from "./types";
+import StoreConsumer, { ConsumerActions } from "./StoreConsumer";
+import { Omit } from "./types";
 
-interface InjectedProps<T extends ObserveTargetTuple> {
-  stores: InjectedInstances<T>;
-}
-
-export default function withStores<T extends ObserveTargetTuple>(...targets: T) {
-  return <P extends {}>
-  (WrappedComponent: React.ComponentType<P & InjectedProps<T>>) => {
-
+export default function withStores
+  <P extends {}>(WrappedComponent: React.ComponentType<P & ConsumerActions>) {
     const Component = (props: P) => (
-      <StoreConsumer targets={targets}>
-        {(...stores) => {
+      <StoreConsumer>
+        {(actions) => {
           return (
             <WrappedComponent
-              stores={stores}
+              {...actions}
               {...props}
             />
           );
@@ -23,6 +17,5 @@ export default function withStores<T extends ObserveTargetTuple>(...targets: T) 
       </StoreConsumer>
     );
 
-    return Component as any as React.ComponentType<Omit<P, keyof InjectedProps<T>>>;
-  };
+    return Component as unknown as React.ComponentType<Omit<P, keyof ConsumerActions>>;
 }

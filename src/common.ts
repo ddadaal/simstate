@@ -1,5 +1,5 @@
 import { StoreType } from ".";
-import { ObserveTarget, Dep, NormalizedObserveTarget } from "./types";
+import { ObserveTarget, NormalizedObserveTarget, Dependency } from "./types";
 
 export function noProviderError(): Error {
   return new Error("Wrap your component in a StoreProvider.");
@@ -17,6 +17,15 @@ export function normalizeTarget<T extends ObserveTarget>(target: T): NormalizedO
   }
 }
 
-export function target<T extends StoreType<any>>(storeType: T, dep: Dep<T>): [T, Dep<T>] {
+export function compareArray(arr1: any[], arr2: any[]): boolean {
+  return arr1.length === arr2.length && arr1.every((value, index) => Object.is(value, arr2[index]));
+}
+
+/**
+ * Use
+ * @param storeType
+ * @param dep
+ */
+export function target<T extends StoreType<any>>(storeType: T, dep: Dependency<T>): [T, Dependency<T>] {
   return [storeType, dep];
 }

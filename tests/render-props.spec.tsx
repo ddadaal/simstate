@@ -3,15 +3,15 @@ import { StoreConsumer } from "../src";
 import { mount } from "enzyme";
 import StoreProvider from "../src/StoreProvider";
 import { TestStore, AnotherStore, MultiStateStore } from "./common";
-import { target } from "../src/common";
 
 describe("Render props", () => {
 
   class Component extends React.PureComponent {
     render() {
       return (
-        <StoreConsumer targets={[TestStore]}>
-          {(store) => {
+        <StoreConsumer>
+          {({ useStore }) => {
+            const store = useStore(TestStore);
             return (
               <span>{store.state.value}</span>
             );
@@ -24,11 +24,10 @@ describe("Render props", () => {
   class MultiStoreComponent extends React.PureComponent {
     render() {
       return (
-        <StoreConsumer targets={[
-          TestStore,
-          target(AnotherStore, ["text", (state) => state.text]),
-        ]}>
-          {(store, another) => {
+        <StoreConsumer>
+          {({ useStore }) => {
+            const store = useStore(TestStore);
+            const another = useStore(AnotherStore, [(s) => s.text]);
             return (
               <div>
                 <span id="test">{store.state.value}</span>
@@ -98,8 +97,13 @@ describe("Render props", () => {
     );
 
     const expectValues = (test: number, another: string) => {
-      expect(wrapper.find("#test").text()).toBe(test + "");
-      expect(wrapper.find("#another").text()).toBe(another);
+      try {
+        expect(wrapper.find("#test").text()).toBe(test + "");
+        expect(wrapper.find("#another").text()).toBe(another);
+      } catch (e) {
+        fail(e);
+      }
+
     };
 
     expectValues(42, "text");
@@ -138,13 +142,14 @@ describe("Render props", () => {
 
   it("should not update when updating a not dependent state", async () => {
 
-    const store = new MultiStateStore("state1", "state2");
+    const store = new MultiStateStore("state1", "state2", "state3");
 
     class Component extends React.PureComponent {
       render() {
         return (
-          <StoreConsumer targets={[target(MultiStateStore, ["state1"])]}>
-            {(store) => {
+          <StoreConsumer>
+            {({ useStore }) => {
+              const store = useStore(MultiStateStore, ["state1"]);
               return (
                 <span>{store.state.state2}</span>
               );
@@ -156,7 +161,7 @@ describe("Render props", () => {
 
     const wrapper = mount(
       <StoreProvider stores={[store]}>
-          <Component />
+        <Component />
       </StoreProvider>,
     );
 

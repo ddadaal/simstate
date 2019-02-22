@@ -1,9 +1,10 @@
-import { Dep } from "./types";
+import { Dependency } from "./types";
 import { getChecker, DepChecker } from "./DepChecker";
 
 type Observer = (() => void) | (() => Promise<void>);
 
 interface ObserverInfo<State extends object> {
+  dep: Dependency | undefined;
   shouldUpdate: DepChecker;
 }
 
@@ -34,12 +35,12 @@ export default class Store<State extends object> {
     return Promise.all(causedObserver.map((observer) => observer()));
   }
 
-  subscribe(fn: Observer, dep?: Dep) {
-    this.observers.set(fn , { shouldUpdate: getChecker(dep) });
+  subscribe(observer: Observer, dep?: Dependency) {
+    this.observers.set(observer , { dep, shouldUpdate: getChecker(dep) });
   }
 
-  unsubscribe(fn: Observer) {
-    this.observers.delete(fn);
+  unsubscribe(observer: Observer) {
+    this.observers.delete(observer);
   }
 
   // afterHydration() {

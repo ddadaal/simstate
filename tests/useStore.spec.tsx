@@ -79,14 +79,18 @@ describe("UseStore", () => {
 
   it("should not update when updating a not dependent state", () => {
 
-    const store = new MultiStateStore("state1", "state2");
+    const store = new MultiStateStore("state1", "state2", "state3");
 
     const Component = () => {
 
-      const store = useStore(MultiStateStore, ["state1"]);
+      const store = useStore(MultiStateStore, ["state1", (s) => s.state3 ]);
 
       return (
-        <span>{store.state.state2}</span>
+        <div>
+          <span id="state1">{store.state.state1}</span>
+          <span id="state2">{store.state.state2}</span>
+          <span id="state3">{store.state.state3}</span>
+        </div>
       );
     };
 
@@ -98,13 +102,21 @@ describe("UseStore", () => {
       </StoreProvider>,
     );
 
-    expect(wrapper.find("span").text()).toBe("state2");
+    const expectValues = (state1: string, state2: string, state3: string) => {
+      expect(wrapper.find("#state1").text()).toBe(state1);
+      expect(wrapper.find("#state2").text()).toBe(state2);
+      expect(wrapper.find("#state3").text()).toBe(state3);
+    };
+
+    expectValues("state1", "state2", "state3");
 
     store.setState({ state2: "123" });
 
-    wrapper.update();
+    expectValues("state1", "state2", "state3");
 
-    expect(wrapper.find("span").text()).toBe("state2");
+    store.setState({ state3: "new state3"});
+
+    expectValues("state1", "123", "new state3");
 
   });
 });

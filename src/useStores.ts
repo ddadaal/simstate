@@ -1,7 +1,7 @@
 import { useContext, useState, useLayoutEffect, useCallback } from "react";
 import { noProviderError, normalizeTarget, notProvidedError } from "./common";
 import { SimstateContext } from "./StoreProvider";
-import { Dep, InjectedInstances, NormalizedObserveTarget, ObserveTargetTuple } from "./types";
+import { Dependency, InjectedInstances, NormalizedObserveTarget, ObserveTargetTuple } from "./types";
 import { Store } from "./index";
 
 /**
@@ -25,7 +25,7 @@ export default function useStores
     if (!instance) {
       throw notProvidedError(storeType);
     }
-    return [instance, target[1]] as [Store<any>, Dep | undefined];
+    return [instance, target[1]] as [Store<any>, Dependency | undefined];
   });
 
   // dummy state used to cause update

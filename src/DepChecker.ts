@@ -1,4 +1,5 @@
-import { ArrayComparerDep, CustomComparerDep, Dep, DepItem } from "./types";
+import { ArrayComparerDep, CustomComparerDep, Dependency, DepItem } from "./types";
+import { compareArray } from "./common";
 
 export type DepChecker = (prev: object, curr: object) => boolean;
 
@@ -6,7 +7,7 @@ function fullObserverHandler() {
   return true;
 }
 
-function customComparerHandler(dep: CustomComparerDep<{}>) {
+function customComparerHandler(dep: CustomComparerDep<any>) {
   return (prev: object, curr: object) => {
     return dep(prev, curr);
   };
@@ -28,12 +29,12 @@ function arrayComparerHandler(dep: ArrayComparerDep<any>) {
     const prevStates = dep.map(mapStateWithDepItem(prev));
     const nextStates = dep.map(mapStateWithDepItem(curr));
 
-    return prevStates.some((value, index) => !Object.is(value, nextStates[index]));
+    return !compareArray(prevStates, nextStates);
 
   };
 }
 
-export function getChecker(dep: Dep | undefined): DepChecker {
+export function getChecker(dep: Dependency | undefined): DepChecker {
 
   if (!dep) {
     return fullObserverHandler;

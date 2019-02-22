@@ -2,12 +2,17 @@ import { StoreType } from ".";
 import { SimstateContext } from "./StoreProvider";
 import { useContext, useState, useLayoutEffect, useCallback } from "react";
 import { noProviderError, notProvidedError } from "./common";
-import { Dep } from "./types";
+import { Dependency } from "./types";
 
-export default function useStore<ST extends StoreType<any>>(
-  storeType: ST,
-  dep?: Dep<ST>,
-) {
+/**
+ * Get store and observe their changes.
+ * @param storeType the type of store to be observed
+ * @param dep the props of the state which will update the component when changed,
+ * or a custom comparer to decide when to update
+ * @return InstanceType<ST> the store instance
+ */
+export default function useStore
+  <ST extends StoreType<any>>(storeType: ST, dep?: Dependency<ST>): InstanceType<ST> {
   const providedStores = useContext(SimstateContext);
 
   if (!providedStores) {

@@ -1,12 +1,15 @@
 import React from "react";
 import { SimstateContext, ISimstateContext } from "./StoreProvider";
-import { noProviderError, notProvidedError, normalizeTarget } from "./common";
-import { InjectedInstances, ObserveTargetTuple } from "./types";
-import { Store } from "./index";
+import { noProviderError, notProvidedError } from "./common";
+import { Dependency, ObserveTargetTuple } from "./types";
+import { Store, StoreType } from "./index";
 
-interface Props<T extends ObserveTargetTuple> {
-  targets: T;
-  children(...instances: InjectedInstances<T>): React.ReactNode;
+export interface ConsumerActions {
+  useStore<ST extends StoreType<any>>(storeType: ST, dep?: Dependency<ST>): InstanceType<ST>;
+}
+
+interface Props {
+  children(actions: ConsumerActions): React.ReactElement;
 }
 
 interface State {
@@ -14,22 +17,19 @@ interface State {
 }
 
 export default class StoreConsumer<T extends ObserveTargetTuple>
-  extends React.Component<Props<T>, State> {
+  extends React.Component<Props, State> {
 
   state = {};
   unmounted = false;
-  instances: InjectedInstances<T> = [] as Store<any>[] as InjectedInstances<T>;
-
-  componentDidMount(): void {
-
-  }
+  instances = new Set<Store<any>>();
+  map: ISimstateContext;
 
   componentWillUnmount() {
     this.unmounted = true;
-    this.unsubscribe();
+    this.unsubscribeAll();
   }
 
-  private unsubscribe() {
+  private unsubscribeAll() {
     this.instances.forEach((store) => {
       store.unsubscribe(this.update);
     });
@@ -47,36 +47,31 @@ export default class StoreConsumer<T extends ObserveTargetTuple>
     });
   }
 
-  createInstances(map: ISimstateContext | undefined) {
-    this.unsubscribe();
-
-    if (!map) {
-      throw noProviderError();
+  useStore = <ST extends StoreType<any>>(storeType: ST, dep?: Dependency<ST>): InstanceType<ST> => {
+    const store = this.map.get(storeType);
+    if (!store) {
+      throw notProvidedError(storeType);
     }
 
-    this.instances = this.props.targets.map((t) => {
-      const [storeType, dep] = normalizeTarget(t);
+    // multiple useStore on one store will override previous registration
+    store.subscribe(this.update, dep);
 
-      const store = map.get(storeType);
-      if (!store) {
-        throw notProvidedError(storeType);
-      }
+    this.instances.add(store);
 
-      store.unsubscribe(this.update);
-      store.subscribe(this.update, dep);
-
-      return store;
-    }) as InjectedInstances<T>;
-
-    return this.instances;
+    return store as InstanceType<ST>;
   }
 
   render() {
     return (
       <SimstateContext.Consumer>
         {(map) => {
-          this.createInstances(map);
-          return this.props.children(...(this.instances as any));
+          if (!map) {
+            throw noProviderError();
+          }
+          this.map = map;
+          this.unsubscribeAll();
+          this.instances.clear();
+          return this.props.children({ useStore: this.useStore });
         }}
       </SimstateContext.Consumer>
     );

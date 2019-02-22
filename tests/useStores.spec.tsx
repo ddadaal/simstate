@@ -54,8 +54,8 @@ describe("UseStores", () => {
     const another = new AnotherStore("haha");
 
     // tslint:disable
-    expect(store["observers"]).toHaveLength(0);
-    expect(another["observers"]).toHaveLength(0);
+    expect(store["observers"].size).toBe(0);
+    expect(another["observers"].size).toBe(0);
 
     const Component = () => {
       const [store, another] = useStores(TestStore, AnotherStore);
@@ -73,14 +73,14 @@ describe("UseStores", () => {
       </StoreProvider>,
     );
 
-    expect(store["observers"]).toHaveLength(1);
-    expect(another["observers"]).toHaveLength(1);
+    expect(store["observers"].size).toBe(1);
+    expect(another["observers"].size).toBe(1);
 
 
     wrapper.unmount();
 
-    expect(store["observers"]).toHaveLength(0);
-    expect(another["observers"]).toHaveLength(0);
+    expect(store["observers"].size).toBe(0);
+    expect(another["observers"].size).toBe(0);
 
   });
 

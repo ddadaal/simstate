@@ -15,14 +15,14 @@ export type CustomComparerDep<S extends any> =
   ((prev: S, next: S) => boolean)
   ;
 
-export type Dep<T extends StoreType<any> = StoreType<any>> =
+export type Dependency<T extends StoreType<any> = StoreType<any>> =
   T extends StoreType<infer S>
   ? ArrayComparerDep<S> | CustomComparerDep<S>
   : never
   ;
 
 export type PartialObserveTarget<T extends StoreType<any> = StoreType<any>> =
-  [T, Dep<T>];
+  [T, Dependency<T>];
 
 export type ObserveTarget<T extends StoreType<any> = StoreType<any>> =
   | T
@@ -30,11 +30,11 @@ export type ObserveTarget<T extends StoreType<any> = StoreType<any>> =
   ;
 
 export type NormalizedObserveTarget<T extends ObserveTarget = ObserveTarget> =
-  [ObservedStoreType<T>, Dep<ObservedStoreType<T>> | undefined];
+  [ObservedStoreType<T>, Dependency<ObservedStoreType<T>> | undefined];
 
 export type ObservedStoreType<P extends ObserveTarget> =
   P extends StoreType<any> ? P
-  : P extends [infer S, Dep]
+  : P extends [infer S, Dependency]
   ? S extends StoreType<any> ? S
   : never
   : never

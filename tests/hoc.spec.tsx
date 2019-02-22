@@ -6,9 +6,12 @@ import StoreProvider from "../src/StoreProvider";
 
 describe("HOC", () => {
 
-  const Component = withStores(TestStore)(({ stores: [testStore] }) => (
-    <span>{testStore.state.value}</span>
-  ));
+  const Component = withStores(({ useStore }) => {
+    const store = useStore(TestStore);
+    return (
+      <span>{store.state.value}</span>
+    );
+  });
 
   it("should render with current store state", () => {
     const store = new TestStore(42);
