@@ -1,26 +1,40 @@
 import { StoreType } from ".";
+
 export type Omit<T, K extends keyof any> = T extends any ? Pick<T, Exclude<keyof T, K>> : never;
+
+export type DepItem<S extends any> =
+  | keyof S
+  | ((state: S) => unknown)
+  ;
+
+export type ArrayComparerDep<S extends any> =
+  [...DepItem<S>[]]
+  ;
+
+export type CustomComparerDep<S extends any> =
+  ((prev: S, next: S) => boolean)
+  ;
 
 export type Dep<T extends StoreType<any> = StoreType<any>> =
   T extends StoreType<infer S>
-  ? (keyof S)
+  ? ArrayComparerDep<S> | CustomComparerDep<S>
   : never
   ;
 
 export type PartialObserveTarget<T extends StoreType<any> = StoreType<any>> =
-  [T, Dep<T>[]];
+  [T, Dep<T>];
 
 export type ObserveTarget<T extends StoreType<any> = StoreType<any>> =
   | T
   | PartialObserveTarget<T>
   ;
 
-export type NormalizedObserveTarget<T extends ObserveTarget> =
-  [ObservedStoreType<T>, Dep<ObservedStoreType<T>>[] | undefined];
+export type NormalizedObserveTarget<T extends ObserveTarget = ObserveTarget> =
+  [ObservedStoreType<T>, Dep<ObservedStoreType<T>> | undefined];
 
 export type ObservedStoreType<P extends ObserveTarget> =
   P extends StoreType<any> ? P
-  : P extends [infer S, Dep[]]
+  : P extends [infer S, Dep]
   ? S extends StoreType<any> ? S
   : never
   : never

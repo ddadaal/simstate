@@ -1,13 +1,12 @@
-import { TestStore, AnotherStore } from "./common";
+import { TestStore } from "./common";
 import React from "react";
 import { mount } from "enzyme";
 import withStores from "../src/withStores";
 import StoreProvider from "../src/StoreProvider";
-import { targets } from "../src/common";
 
 describe("HOC", () => {
 
-  const Component = withStores(TestStore, targets(AnotherStore, ["text"]))(({ stores: [testStore, anotherStore] }) => (
+  const Component = withStores(TestStore)(({ stores: [testStore] }) => (
     <span>{testStore.state.value}</span>
   ));
 
@@ -50,7 +49,7 @@ describe("HOC", () => {
     const store = new TestStore(42);
 
     // tslint:disable-next-line
-    expect(store["observers"]).toHaveLength(0);
+    expect(store["observers"].size).toBe(0);
 
     const wrapper = mount(
       <StoreProvider stores={[store]}>
@@ -59,12 +58,12 @@ describe("HOC", () => {
     );
 
     // tslint:disable-next-line
-    expect(store["observers"]).toHaveLength(1);
+    expect(store["observers"].size).toBe(1);
 
     wrapper.unmount();
 
     // tslint:disable-next-line
-    expect(store["observers"]).toHaveLength(0);
+    expect(store["observers"].size).toBe(0);
 
   });
 

@@ -2,33 +2,44 @@ import React from "react";
 import { StoreConsumer } from "../src";
 import { mount } from "enzyme";
 import StoreProvider from "../src/StoreProvider";
-import { TestStore, AnotherStore } from "./common";
-import { targets } from "../src/common";
+import { TestStore, AnotherStore, MultiStateStore } from "./common";
+import { target } from "../src/common";
 
 describe("Render props", () => {
 
-  const Component = () => (
-    <StoreConsumer targets={[TestStore]}>
-      {(store) => {
-        return (
-          <span>{store.state.value}</span>
-        );
-      }}
-    </StoreConsumer>
-  );
+  class Component extends React.PureComponent {
+    render() {
+      return (
+        <StoreConsumer targets={[TestStore]}>
+          {(store) => {
+            return (
+              <span>{store.state.value}</span>
+            );
+          }}
+        </StoreConsumer>
+      );
+    }
+  }
 
-  const MultiStoreComponent = () => (
-    <StoreConsumer targets={[TestStore, targets(AnotherStore, ["text"])]}>
-      {(store, another) => {
-        return (
-          <div>
-            <span id="test">{store.state.value}</span>
-            <span id="another">{another.state.text}</span>
-          </div>
-        );
-      }}
-    </StoreConsumer>
-  );
+  class MultiStoreComponent extends React.PureComponent {
+    render() {
+      return (
+        <StoreConsumer targets={[
+          TestStore,
+          target(AnotherStore, ["text", (state) => state.text]),
+        ]}>
+          {(store, another) => {
+            return (
+              <div>
+                <span id="test">{store.state.value}</span>
+                <span id="another">{another.state.text}</span>
+              </div>
+            );
+          }}
+        </StoreConsumer>
+      );
+    }
+  }
 
   it("should render with current store state", () => {
     const store = new TestStore(42);
@@ -107,7 +118,7 @@ describe("Render props", () => {
     const store = new TestStore(42);
 
     // tslint:disable-next-line
-    expect(store["observers"]).toHaveLength(0);
+    expect(store["observers"].size).toBe(0);
 
     const wrapper = mount(
       <StoreProvider stores={[store]}>
@@ -116,12 +127,44 @@ describe("Render props", () => {
     );
 
     // tslint:disable-next-line
-    expect(store["observers"]).toHaveLength(1);
+    expect(store["observers"].size).toBe(1);
 
     wrapper.unmount();
 
     // tslint:disable-next-line
-    expect(store["observers"]).toHaveLength(0);
+    expect(store["observers"].size).toBe(0);
+
+  });
+
+  it("should not update when updating a not dependent state", async () => {
+
+    const store = new MultiStateStore("state1", "state2");
+
+    class Component extends React.PureComponent {
+      render() {
+        return (
+          <StoreConsumer targets={[target(MultiStateStore, ["state1"])]}>
+            {(store) => {
+              return (
+                <span>{store.state.state2}</span>
+              );
+            }}
+          </StoreConsumer>
+        );
+      }
+    }
+
+    const wrapper = mount(
+      <StoreProvider stores={[store]}>
+          <Component />
+      </StoreProvider>,
+    );
+
+    expect(wrapper.find("span").text()).toBe("state2");
+
+    await store.setState({ state2: "123" });
+
+    expect(wrapper.find("span").text()).toBe("state2");
 
   });
 

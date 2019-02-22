@@ -17,6 +17,6 @@ export function normalizeTarget<T extends ObserveTarget>(target: T): NormalizedO
   }
 }
 
-export function targets<T extends StoreType<any>>(storeType: T, deps: Dep<T>[]): [T, Dep<T>[]] {
-  return [storeType, deps];
+export function target<T extends StoreType<any>>(storeType: T, dep: Dep<T>): [T, Dep<T>] {
+  return [storeType, dep];
 }

@@ -18,7 +18,7 @@ const Component = () => {
 
 // expected: the component will not update when incrementB is called
 const Expected = () => {
-  const store = useStore(AStore, "a"); // dependent state are specified with types checked
+  const store = useStore(AStore, "a"); // only change when prop "a" is changed (Object.is)
   return <span>{store.state.a}</span>;
 }
 

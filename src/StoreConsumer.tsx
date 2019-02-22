@@ -2,6 +2,7 @@ import React from "react";
 import { SimstateContext, ISimstateContext } from "./StoreProvider";
 import { noProviderError, notProvidedError, normalizeTarget } from "./common";
 import { InjectedInstances, ObserveTargetTuple } from "./types";
+import { Store } from "./index";
 
 interface Props<T extends ObserveTargetTuple> {
   targets: T;
@@ -17,7 +18,11 @@ export default class StoreConsumer<T extends ObserveTargetTuple>
 
   state = {};
   unmounted = false;
-  instances: InjectedInstances<T>;
+  instances: InjectedInstances<T> = [] as Store<any>[] as InjectedInstances<T>;
+
+  componentDidMount(): void {
+
+  }
 
   componentWillUnmount() {
     this.unmounted = true;
@@ -50,7 +55,7 @@ export default class StoreConsumer<T extends ObserveTargetTuple>
     }
 
     this.instances = this.props.targets.map((t) => {
-      const [storeType, deps] = normalizeTarget(t);
+      const [storeType, dep] = normalizeTarget(t);
 
       const store = map.get(storeType);
       if (!store) {
@@ -58,7 +63,7 @@ export default class StoreConsumer<T extends ObserveTargetTuple>
       }
 
       store.unsubscribe(this.update);
-      store.subscribe(this.update, deps);
+      store.subscribe(this.update, dep);
 
       return store;
     }) as InjectedInstances<T>;
