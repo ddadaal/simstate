@@ -1,4 +1,4 @@
-import Store, { StoreType} from "./Store";
+import Store, { StoreType } from "./Store";
 export { StoreType, Store };
 
 import StoreProvider from "./StoreProvider";
@@ -10,11 +10,8 @@ export { useStore };
 import useStores from "./useStores";
 export { useStores };
 
-import StoreConsumer from "./StoreConsumer";
-export { StoreConsumer };
+import StoreConsumer, { ConsumerActions } from "./StoreConsumer";
+export { StoreConsumer, ConsumerActions };
 
 import withStores from "./withStores";
 export { withStores };
-
-import { WithStoresProps } from "./common";
-export { WithStoresProps };

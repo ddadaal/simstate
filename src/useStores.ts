@@ -1,36 +1,25 @@
-import { StoreType } from ".";
-import { useContext, useState, useRef, useLayoutEffect } from "react";
-import { noProviderError, notProvidedError, Instances } from "./common";
-import { SimstateContext } from "./StoreProvider";
+import { normalizeTarget } from "./common";
+import { Dependency, InjectedInstances, ObserveTargetTuple } from "./types";
+import useStore from "./useStore";
+import { StoreType } from "./Store";
 
-export default function useStores<T extends StoreType<any>[]>(...storeTypes: T): Instances<T> {
-  const providedStores = useContext(SimstateContext);
+/**
+ * Use this function to get typecheck when passing parameters to {@link useStores}
+ * @param storeType the types of store to be observed
+ * @param dep the dependencies
+ */
+export function target<T extends StoreType<any>>(storeType: T, dep: Dependency<T>): [T, Dependency<T>] {
+  return [storeType, dep];
+}
 
-  if (!providedStores) {
-    throw noProviderError();
-  }
+/**
+ * Get stores and observe their changes,
+ * @deprecated Perfer {@link useStore} to observe one store at one time
+ * @param targets target stores
+ * @return the instances of stores
+ */
+export default function useStores
+  <S extends ObserveTargetTuple>(...targets: S): InjectedInstances<S> {
 
-  const stores = storeTypes.map((storeType) => {
-    const instance = providedStores.get(storeType);
-    if (!instance) {
-      throw notProvidedError(storeType);
-    }
-    return instance;
-  });
-
-  // dummy state used to cause update
-  const [, update] = useState({});
-
-  // create a persistent update function
-  const { current: listener } = useRef(() => update({}));
-
-  useLayoutEffect(() => { // use layout effect to priorize subscription to location update in the top
-    stores.forEach((store) => store.subscribe(listener));
-
-    return () => {
-      stores.forEach((store) => store.unsubscribe(listener));
-    };
-  }, stores);
-
-  return stores as Instances<T>;
+  return targets.map((target) => useStore(...normalizeTarget(target))) as InjectedInstances<S>;
 }

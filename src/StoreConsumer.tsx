@@ -1,30 +1,38 @@
 import React from "react";
-import { StoreType } from ".";
 import { SimstateContext, ISimstateContext } from "./StoreProvider";
-import { noProviderError, notProvidedError, WithStoresProps, Instances } from "./common";
+import { noProviderError, notProvidedError } from "./common";
+import { Dependency } from "./types";
+import { Store, StoreType } from "./index";
 
-interface RealProps {
-  storeTypes: StoreType<any>[];
-  children: (props: WithStoresProps) => React.ReactNode;
+export interface ConsumerActions {
+  useStore<ST extends StoreType<any>>(storeType: ST, dep?: Dependency<ST>): InstanceType<ST>;
+}
+
+interface Props {
+  children(actions: ConsumerActions): React.ReactElement;
 }
 
 interface State {
 
 }
 
-export default class StoreConsumer extends React.Component<RealProps, State> {
+/**
+ * Render-props usage
+ */
+export default class StoreConsumer extends React.Component<Props, State> {
 
   state = {};
   unmounted = false;
-  storeMap: ISimstateContext = new Map();
+  instances = new Set<Store<any>>();
+  map: ISimstateContext;
 
   componentWillUnmount() {
     this.unmounted = true;
-    this.unsubscribe();
+    this.unsubscribeAll();
   }
 
-  private unsubscribe() {
-    Array.from(this.storeMap.values()).forEach((store) => {
+  private unsubscribeAll() {
+    this.instances.forEach((store) => {
       store.unsubscribe(this.update);
     });
   }
@@ -41,51 +49,31 @@ export default class StoreConsumer extends React.Component<RealProps, State> {
     });
   }
 
-  createInstances(map: ISimstateContext | undefined) {
-    this.unsubscribe();
-
-    if (!map) {
-      throw noProviderError();
-    }
-
-    this.storeMap.clear();
-
-    this.props.storeTypes.forEach((storeType) => {
-      const store = map.get(storeType);
-      if (!store) {
-        throw notProvidedError(storeType);
-      }
-
-      store.unsubscribe(this.update);
-      store.subscribe(this.update);
-
-      this.storeMap.set(storeType, store);
-    });
-  }
-
-  useStore = <ST extends StoreType<any>>(storeType: ST) => {
-    const store = this.storeMap.get(storeType) as InstanceType<ST> | undefined;
-
+  useStore = <ST extends StoreType<any>>(storeType: ST, dep?: Dependency<ST>): InstanceType<ST> => {
+    const store = this.map.get(storeType);
     if (!store) {
       throw notProvidedError(storeType);
     }
 
-    return store;
-  }
+    // multiple useStore on one store will override previous registration
+    store.subscribe(this.update, dep);
 
-  useStores = <T extends StoreType<any>[]>(...storeTypes: T): Instances<T> => {
-    return storeTypes.map((storeType) => this.useStore(storeType)) as Instances<T>;
+    this.instances.add(store);
+
+    return store as InstanceType<ST>;
   }
 
   render() {
     return (
       <SimstateContext.Consumer>
         {(map) => {
-          this.createInstances(map);
-          return this.props.children({
-            useStore: this.useStore,
-            useStores: this.useStores,
-          });
+          if (!map) {
+            throw noProviderError();
+          }
+          this.map = map;
+          this.unsubscribeAll();
+          this.instances.clear();
+          return this.props.children({ useStore: this.useStore });
         }}
       </SimstateContext.Consumer>
     );

@@ -1,34 +1,46 @@
+import { Dependency } from "./types";
+import { getChecker, DepChecker } from "./DepChecker";
+
 type Observer = (() => void) | (() => Promise<void>);
+
+interface ObserverInfo<State extends object> {
+  dep: Dependency | undefined;
+  shouldUpdate: DepChecker;
+}
 
 export default class Store<State extends object> {
 
   state: State;
 
-  private observers: Observer[] = [];
+  private observers = new Map<Observer, ObserverInfo<State>>();
 
   async setState(
     updater: Partial<State> | ((prevState: State) => State),
-  ) {
+  ): Promise<void[]> {
 
-    const nextState = typeof updater === "function" ? updater(this.state) : updater;
+    const updatedState = typeof updater === "function" ? updater(this.state) : updater;
 
-    this.state = {
-      ...this.state,
-      ...nextState,
-    };
+    const nextState = { ...this.state, ...updatedState };
 
-    const promises = this.observers.map((observer) => observer());
+    const causedObserver = [] as (() => void|Promise<void>)[];
 
-    return Promise.all(promises);
+    this.observers.forEach((info, observer) => {
+      if (info.shouldUpdate(this.state, nextState)) {
+        causedObserver.push(observer);
+      }
+    });
+
+    this.state = nextState;
+
+    return Promise.all(causedObserver.map((observer) => observer()));
   }
 
-  subscribe(fn: Observer) {
-    this.observers.push(fn);
+  subscribe(observer: Observer, dep?: Dependency) {
+    this.observers.set(observer, { dep, shouldUpdate: getChecker(dep) });
   }
 
-  unsubscribe(fn: Observer) {
-    this.observers = this.observers.filter((f) => f !== fn);
-
+  unsubscribe(observer: Observer) {
+    this.observers.delete(observer);
   }
 
   // afterHydration() {

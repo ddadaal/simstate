@@ -2,34 +2,43 @@ import React from "react";
 import { StoreConsumer } from "../src";
 import { mount } from "enzyme";
 import StoreProvider from "../src/StoreProvider";
-import { TestStore, AnotherStore } from "./common";
+import { TestStore, AnotherStore, MultiStateStore } from "./common";
 
 describe("Render props", () => {
 
-  const Component = () => (
-    <StoreConsumer storeTypes={[TestStore]}>
-      {({ useStore }) => {
-        const store = useStore(TestStore);
-        return (
-          <span>{store.state.value}</span>
-        );
-      }}
-    </StoreConsumer>
-  );
+  class Component extends React.PureComponent {
+    render() {
+      return (
+        <StoreConsumer>
+          {({ useStore }) => {
+            const store = useStore(TestStore);
+            return (
+              <span>{store.state.value}</span>
+            );
+          }}
+        </StoreConsumer>
+      );
+    }
+  }
 
-  const MultiStoreComponent = () => (
-    <StoreConsumer storeTypes={[TestStore, AnotherStore]}>
-      {({ useStores }) => {
-        const [store, another] = useStores(TestStore, AnotherStore);
-        return (
-          <div>
-            <span id="test">{store.state.value}</span>
-            <span id="another">{another.state.text}</span>
-          </div>
-        );
-      }}
-    </StoreConsumer>
-  );
+  class MultiStoreComponent extends React.PureComponent {
+    render() {
+      return (
+        <StoreConsumer>
+          {({ useStore }) => {
+            const store = useStore(TestStore);
+            const another = useStore(AnotherStore, [(s) => s.text]);
+            return (
+              <div>
+                <span id="test">{store.state.value}</span>
+                <span id="another">{another.state.text}</span>
+              </div>
+            );
+          }}
+        </StoreConsumer>
+      );
+    }
+  }
 
   it("should render with current store state", () => {
     const store = new TestStore(42);
@@ -88,8 +97,13 @@ describe("Render props", () => {
     );
 
     const expectValues = (test: number, another: string) => {
-      expect(wrapper.find("#test").text()).toBe(test + "");
-      expect(wrapper.find("#another").text()).toBe(another);
+      try {
+        expect(wrapper.find("#test").text()).toBe(test + "");
+        expect(wrapper.find("#another").text()).toBe(another);
+      } catch (e) {
+        fail(e);
+      }
+
     };
 
     expectValues(42, "text");
@@ -108,7 +122,7 @@ describe("Render props", () => {
     const store = new TestStore(42);
 
     // tslint:disable-next-line
-    expect(store["observers"]).toHaveLength(0);
+    expect(store["observers"].size).toBe(0);
 
     const wrapper = mount(
       <StoreProvider stores={[store]}>
@@ -117,33 +131,46 @@ describe("Render props", () => {
     );
 
     // tslint:disable-next-line
-    expect(store["observers"]).toHaveLength(1);
+    expect(store["observers"].size).toBe(1);
 
     wrapper.unmount();
 
     // tslint:disable-next-line
-    expect(store["observers"]).toHaveLength(0);
+    expect(store["observers"].size).toBe(0);
 
   });
 
-  it("should report error when using a store that is not specified", () => {
-    console.error = () => { };
+  it("should not update when updating a not dependent state", async () => {
 
-    const Component = () => (
-      <StoreConsumer storeTypes={[]}>
-        {({ useStore }) => {
-          useStore(TestStore);
-          return "never reach here!";
-        }}
-      </StoreConsumer>
-    );
+    const store = new MultiStateStore("state1", "state2", "state3");
 
-    // provided but not specified
-    expect(() => mount(
-      <StoreProvider stores={[new TestStore(42)]}>
+    class Component extends React.PureComponent {
+      render() {
+        return (
+          <StoreConsumer>
+            {({ useStore }) => {
+              const store = useStore(MultiStateStore, ["state1"]);
+              return (
+                <span>{store.state.state2}</span>
+              );
+            }}
+          </StoreConsumer>
+        );
+      }
+    }
+
+    const wrapper = mount(
+      <StoreProvider stores={[store]}>
         <Component />
       </StoreProvider>,
-    )).toThrowError();
+    );
+
+    expect(wrapper.find("span").text()).toBe("state2");
+
+    await store.setState({ state2: "123" });
+
+    expect(wrapper.find("span").text()).toBe("state2");
+
   });
 
   it("should report error when using a store that is not provided", () => {

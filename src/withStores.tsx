@@ -1,20 +1,19 @@
 import React from "react";
-import { StoreType } from ".";
-import StoreConsumer from "./StoreConsumer";
-import { Omit, WithStoresProps } from "./common";
+import StoreConsumer, { ConsumerActions } from "./StoreConsumer";
+import { Omit } from "./types";
 
-export default function withStores<T extends StoreType<any>[]>(...storeTypes: T) {
-  return <P extends {}>
-  (WrappedComponent: React.ComponentType<P & WithStoresProps>) => {
-
+/**
+ * Higher-Order component usage
+ * @param WrappedComponent
+ */
+export default function withStores
+  <P extends {}>(WrappedComponent: React.ComponentType<P & ConsumerActions>) {
     const Component = (props: P) => (
-      <StoreConsumer storeTypes={storeTypes}>
-        {({ useStore, useStores }) => {
-
+      <StoreConsumer>
+        {(actions) => {
           return (
             <WrappedComponent
-              useStore={useStore}
-              useStores={useStores}
+              {...actions}
               {...props}
             />
           );
@@ -22,6 +21,5 @@ export default function withStores<T extends StoreType<any>[]>(...storeTypes: T)
       </StoreConsumer>
     );
 
-    return Component as any as React.ComponentType<Omit<P, keyof T>>;
-  };
+    return Component as unknown as React.ComponentType<Omit<P, keyof ConsumerActions>>;
 }

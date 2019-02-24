@@ -2,7 +2,7 @@ import { StoreProvider } from "../src";
 import { TestStore, AnotherStore } from "./common";
 import { mount } from "enzyme";
 import React from "react";
-import useStores from "../src/useStores";
+import useStores, { target } from "../src/useStores";
 
 describe("UseStores", () => {
   it("should inject single store", () => {
@@ -27,7 +27,7 @@ describe("UseStores", () => {
   it("should inject multiple stores", () => {
 
     const Component = () => {
-      const [store, another] = useStores(TestStore, AnotherStore);
+      const [store, another] = useStores(target(TestStore, ["value"]), AnotherStore);
       return (
         <div>
           <span id="test">{store.state.value}</span>
@@ -54,8 +54,8 @@ describe("UseStores", () => {
     const another = new AnotherStore("haha");
 
     // tslint:disable
-    expect(store["observers"]).toHaveLength(0);
-    expect(another["observers"]).toHaveLength(0);
+    expect(store["observers"].size).toBe(0);
+    expect(another["observers"].size).toBe(0);
 
     const Component = () => {
       const [store, another] = useStores(TestStore, AnotherStore);
@@ -73,14 +73,14 @@ describe("UseStores", () => {
       </StoreProvider>,
     );
 
-    expect(store["observers"]).toHaveLength(1);
-    expect(another["observers"]).toHaveLength(1);
+    expect(store["observers"].size).toBe(1);
+    expect(another["observers"].size).toBe(1);
 
 
     wrapper.unmount();
 
-    expect(store["observers"]).toHaveLength(0);
-    expect(another["observers"]).toHaveLength(0);
+    expect(store["observers"].size).toBe(0);
+    expect(another["observers"].size).toBe(0);
 
   });
 

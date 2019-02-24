@@ -1,4 +1,4 @@
-import { TestStore, AnotherStore } from "./common";
+import { TestStore } from "./common";
 import React from "react";
 import { mount } from "enzyme";
 import withStores from "../src/withStores";
@@ -6,9 +6,12 @@ import StoreProvider from "../src/StoreProvider";
 
 describe("HOC", () => {
 
-  const Component = withStores(TestStore)(({ useStore }) => (
-    <span>{useStore(TestStore).state.value}</span>
-  ));
+  const Component = withStores(({ useStore }) => {
+    const store = useStore(TestStore);
+    return (
+      <span>{store.state.value}</span>
+    );
+  });
 
   it("should render with current store state", () => {
     const store = new TestStore(42);
@@ -49,7 +52,7 @@ describe("HOC", () => {
     const store = new TestStore(42);
 
     // tslint:disable-next-line
-    expect(store["observers"]).toHaveLength(0);
+    expect(store["observers"].size).toBe(0);
 
     const wrapper = mount(
       <StoreProvider stores={[store]}>
@@ -58,27 +61,13 @@ describe("HOC", () => {
     );
 
     // tslint:disable-next-line
-    expect(store["observers"]).toHaveLength(1);
+    expect(store["observers"].size).toBe(1);
 
     wrapper.unmount();
 
     // tslint:disable-next-line
-    expect(store["observers"]).toHaveLength(0);
+    expect(store["observers"].size).toBe(0);
 
-  });
-
-  it("should report error when using a store that is not specified", () => {
-
-    const Component = withStores(AnotherStore)(({ useStore }) => {
-      useStore(TestStore);
-      return <div>"never reach here!"</div>;
-    });
-
-    expect(() => mount(
-      <StoreProvider stores={[new AnotherStore("no")]}>
-        <Component/>
-      </StoreProvider>,
-    ));
   });
 
   it("should report error when using a store that is not provided", () => {

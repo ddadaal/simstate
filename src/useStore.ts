@@ -1,9 +1,18 @@
 import { StoreType } from ".";
 import { SimstateContext } from "./StoreProvider";
-import { useContext, useState, useRef, useLayoutEffect } from "react";
+import { useContext, useState, useLayoutEffect, useCallback } from "react";
 import { noProviderError, notProvidedError } from "./common";
+import { Dependency } from "./types";
 
-export default function useStore<ST extends StoreType<any>>(storeType: ST) {
+/**
+ * Get store and observe their changes.
+ * @param storeType the type of store to be observed
+ * @param dep the props of the state which will update the component when changed,
+ * or a custom comparer to decide when to update
+ * @return InstanceType<ST> the instance of the store
+ */
+export default function useStore
+  <ST extends StoreType<any>>(storeType: ST, dep?: Dependency<ST>): InstanceType<ST> {
   const providedStores = useContext(SimstateContext);
 
   if (!providedStores) {
@@ -20,15 +29,15 @@ export default function useStore<ST extends StoreType<any>>(storeType: ST) {
   const [, update] = useState({});
 
   // create a persistent update function
-  const { current: listener } = useRef(() => update({}));
+  const listener = useCallback(() => update({ }), []);
 
   useLayoutEffect(() => { // use layout effect to priorize subscription to location update in the top
-    store.subscribe(listener);
+    store.subscribe(listener, dep);
 
     return () => {
       store.unsubscribe(listener);
     };
-  }, [store]);
+  }, [store, ...(Array.isArray(dep) ? dep : [dep])]);
 
   return store;
 }
