@@ -12,7 +12,7 @@ export default class Store<State extends object> {
 
   state: State;
 
-  private observers: Map<Observer, ObserverInfo<State>> = new Map();
+  private observers = new Map<Observer, ObserverInfo<State>>();
 
   async setState(
     updater: Partial<State> | ((prevState: State) => State),
@@ -36,7 +36,7 @@ export default class Store<State extends object> {
   }
 
   subscribe(observer: Observer, dep?: Dependency) {
-    this.observers.set(observer , { dep, shouldUpdate: getChecker(dep) });
+    this.observers.set(observer, { dep, shouldUpdate: getChecker(dep) });
   }
 
   unsubscribe(observer: Observer) {

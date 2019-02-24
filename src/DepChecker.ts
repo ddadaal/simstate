@@ -7,9 +7,9 @@ function fullObserverHandler() {
   return true;
 }
 
-function customComparerHandler(dep: CustomComparerDep<any>) {
+function customComparerHandler(comparer: CustomComparerDep<any>) {
   return (prev: object, curr: object) => {
-    return dep(prev, curr);
+    return !comparer(prev, curr);
   };
 }
 

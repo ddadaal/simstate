@@ -2,7 +2,7 @@ import { StoreProvider } from "../src";
 import { TestStore, AnotherStore } from "./common";
 import { mount } from "enzyme";
 import React from "react";
-import useStores from "../src/useStores";
+import useStores, { target } from "../src/useStores";
 
 describe("UseStores", () => {
   it("should inject single store", () => {
@@ -27,7 +27,7 @@ describe("UseStores", () => {
   it("should inject multiple stores", () => {
 
     const Component = () => {
-      const [store, another] = useStores(TestStore, AnotherStore);
+      const [store, another] = useStores(target(TestStore, ["value"]), AnotherStore);
       return (
         <div>
           <span id="test">{store.state.value}</span>

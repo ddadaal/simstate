@@ -1,7 +1,7 @@
 import React from "react";
 import { SimstateContext, ISimstateContext } from "./StoreProvider";
 import { noProviderError, notProvidedError } from "./common";
-import { Dependency, ObserveTargetTuple } from "./types";
+import { Dependency } from "./types";
 import { Store, StoreType } from "./index";
 
 export interface ConsumerActions {
@@ -16,8 +16,10 @@ interface State {
 
 }
 
-export default class StoreConsumer<T extends ObserveTargetTuple>
-  extends React.Component<Props, State> {
+/**
+ * Render-props usage
+ */
+export default class StoreConsumer extends React.Component<Props, State> {
 
   state = {};
   unmounted = false;

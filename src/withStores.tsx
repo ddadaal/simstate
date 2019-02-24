@@ -2,6 +2,10 @@ import React from "react";
 import StoreConsumer, { ConsumerActions } from "./StoreConsumer";
 import { Omit } from "./types";
 
+/**
+ * Higher-Order component usage
+ * @param WrappedComponent
+ */
 export default function withStores
   <P extends {}>(WrappedComponent: React.ComponentType<P & ConsumerActions>) {
     const Component = (props: P) => (

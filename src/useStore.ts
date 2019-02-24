@@ -9,7 +9,7 @@ import { Dependency } from "./types";
  * @param storeType the type of store to be observed
  * @param dep the props of the state which will update the component when changed,
  * or a custom comparer to decide when to update
- * @return InstanceType<ST> the store instance
+ * @return InstanceType<ST> the instance of the store
  */
 export default function useStore
   <ST extends StoreType<any>>(storeType: ST, dep?: Dependency<ST>): InstanceType<ST> {

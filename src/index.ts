@@ -10,8 +10,8 @@ export { useStore };
 import useStores from "./useStores";
 export { useStores };
 
-import StoreConsumer from "./StoreConsumer";
-export { StoreConsumer };
+import StoreConsumer, { ConsumerActions } from "./StoreConsumer";
+export { StoreConsumer, ConsumerActions };
 
 import withStores from "./withStores";
 export { withStores };

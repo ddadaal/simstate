@@ -119,4 +119,32 @@ describe("UseStore", () => {
     expectValues("state1", "123", "new state3");
 
   });
+
+  it("should not update when the custom comparer returns true", async () => {
+    const store = new TestStore(42);
+
+    const Component = () => {
+
+      const store = useStore(TestStore, (prev, curr) => prev.value === curr.value - 1);
+
+      return (
+          <span>{store.state.value}</span>
+      );
+    };
+
+    const wrapper = mount(
+      <StoreProvider stores={[store]}>
+        <UpdateBlocker>
+          <Component />
+        </UpdateBlocker>
+      </StoreProvider>,
+    );
+
+    expect(wrapper.find("span").text()).toBe("42");
+
+    await store.increment();
+    wrapper.update();
+
+    expect(wrapper.find("span").text()).toBe("42");
+  });
 });
