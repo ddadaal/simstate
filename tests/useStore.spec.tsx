@@ -146,5 +146,11 @@ describe("UseStore", () => {
     wrapper.update();
 
     expect(wrapper.find("span").text()).toBe("42");
+
+    await store.setState((s) => ({ value: s.value }));
+    wrapper.update();
+
+    expect(wrapper.find("span").text()).toBe("43");
+
   });
 });
