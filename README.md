@@ -62,7 +62,7 @@ function CounterWithHook() {
 function ComponentWithRenderProps() {
   return (
     <StoreConsumer>
-      {({ useStore }) => { // inject only `useStore` with the same signature and usage as above
+      {({ useStore }: ConsumerActions) => { // inject a ConsumerActions object. Explicitly specifying type is not required.
         const store = useStore(TestStore); 
         return (
           <span>
@@ -75,7 +75,11 @@ function ComponentWithRenderProps() {
 }
 
 // 3.2 Use HOC
-const ComponentWithHOC = withStores(({ useStore }) => (
+
+// extends WithStoresProps to get `useStore` function
+interface Props extends WithStoresProps { }
+
+const ComponentWithHOC = withStores(({ useStore }: Props) => (
   <span>{useStore(TestStore).state.value}</span>
 ));
 
@@ -205,7 +209,7 @@ class BStore extends Store<{ text: string; derived: string; }> {
 - [X] Add test
 - [X] Achieve high test coverage
 - [X] Implement `setState` promise resolve after component update for hook use
-- [ ] [Partial observer](https://github.com/viccrubs/simstate/blob/partial-observer/partial-observer-proposal.md)
+- [X] [Partial observer](https://github.com/viccrubs/simstate/blob/partial-observer/partial-observer-proposal.md)
 - [ ] SSR utilities and its example
 
 # Related Articles

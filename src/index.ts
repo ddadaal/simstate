@@ -13,5 +13,5 @@ export { useStores };
 import StoreConsumer, { ConsumerActions } from "./StoreConsumer";
 export { StoreConsumer, ConsumerActions };
 
-import withStores from "./withStores";
-export { withStores };
+import withStores, { WithStoresProps } from "./withStores";
+export { withStores, WithStoresProps };

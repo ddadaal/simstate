@@ -1,12 +1,16 @@
 import { TestStore } from "./common";
 import React from "react";
 import { mount } from "enzyme";
-import withStores from "../src/withStores";
+import withStores, { WithStoresProps } from "../src/withStores";
 import StoreProvider from "../src/StoreProvider";
+
+interface Props extends WithStoresProps {
+
+}
 
 describe("HOC", () => {
 
-  const Component = withStores(({ useStore }) => {
+  const Component = withStores(({ useStore }: Props) => {
     const store = useStore(TestStore);
     return (
       <span>{store.state.value}</span>
