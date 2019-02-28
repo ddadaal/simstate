@@ -156,6 +156,70 @@ function PartialObserver() {
 
 - `useStores` is deprecated since 2.0 and will be removed in a future release. Use `useStore` for better maintainability.
 
+- When calling `useStore` on one store multiple times, only the last call will actually take effect.
+  
+```jsx
+function Component() {
+  const store0 = useStore(TestStore);
+  const store1 = useStore(TestStore, []); // override previous call
+  
+  // store0 === store1
+  // the component will NOT update when TestStores's `value` is changed,
+  // because the last call passes [] as second parameter,
+  // indicating the component doesn't respond to any change in the store.
+
+  // ...
+}
+```
+
+It is sometimes prone to error, for example when using HOC and having event handler that need to interact with store. In such case, it is recommended to set the store into a instance member.
+
+```jsx
+
+// After the first render, the component WILL NOT update when TestStore's value is changed
+// Since render calls to useStore with [] as second parameter,
+// the component observers to no state in TestStore
+
+// After clicking the button, however, the component WILL update when value is changed,
+// Since event handler calls useStore,
+// which overrides the useStore call in the `render` method
+
+@withStores
+class Component extends React.Component<WithStoresProps> {
+  
+  onClick = () => {
+    this.props.useStore(TestStore).increment();
+  }
+  
+  render() {
+    const store = this.props.useStore(TestStore, []);
+    return (
+      <button onClick={this.onClick}>button</button>;
+    )
+  }
+}
+
+```
+
+```jsx
+@withStores
+class Component extends React.Component<WithStoresProps> {
+  // Set the store as a member instance
+  // to avoid accidental useStore override
+  store = this.props.useStore(TestStore, []);
+
+  onClick = () => {
+    this.store.increment();
+  }
+  
+  render() {
+    return (
+      <button onClick={this.onClick}>button</button>;
+    )
+  }
+}
+```
+
 - Using getter-only property in stores to compute derived state (like MobX's `@computed`) is discouraged, because underlying state properties when using the `partial observer` feature may be missed. The TypeScript will also emit error if you specify a property name that is not included in the store's `state`. Consider including the derived state into state object, and export a updater which updates the original and the derived state at the same time.
 
 ```jsx
