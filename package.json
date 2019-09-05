@@ -11,7 +11,7 @@
     "clean:dist": "rimraf dist",
     "watch": "rollup -cw",
     "start": "rollup -cw",
-    "lint": "tslint '{src,tests}/**/*.{ts,tsx}' --fix",
+    "lint": "eslint \"{src,tests}/**/*.{ts,tsx}\" --fix",
     "test": "jest",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
     "release": "yarn run build && standard-version"
