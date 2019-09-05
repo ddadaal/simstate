@@ -1,16 +1,16 @@
 import React from "react";
-import { TestStore, AnotherStore } from "./common";
-import { StoreProvider, Store } from "../src";
-import { SimstateContext } from "../src/StoreProvider";
+import { testStore, anotherStore } from "./common";
+import { StoreProvider, Store, createStore } from "../src";
+import { contextMap } from "../src/contextMap";
 import { mount } from "enzyme";
 
 describe("Provider", () => {
   it("should provide store", () => {
-    const store = new TestStore(42);
-    const Component = () => (
+    const store = createStore(testStore);
+    const Component: React.FC = () => (
       <StoreProvider stores={[store]}>
         <SimstateContext.Consumer>
-          {(map) => <span>{map!.get(TestStore)!.state.value}</span>}
+          {(map) => <span>{(map!.get(TestStore)! as TestStore).state.value}</span>}
         </SimstateContext.Consumer>
       </StoreProvider>
     );
@@ -22,12 +22,12 @@ describe("Provider", () => {
   it("should re-render when input stores have changed", () => {
 
     class Child extends React.PureComponent {
-      render() {
+      render(): React.ReactNode {
         return (
           <SimstateContext.Consumer>
             {(map) => {
               return (
-                <span>{map!.get(TestStore)!.state.value}</span>
+                <span>{(map!.get(TestStore)! as TestStore).state.value}</span>
               );
             }}
           </SimstateContext.Consumer>
@@ -35,9 +35,9 @@ describe("Provider", () => {
       }
     }
 
-    class Component extends React.Component<{ stores: Store<any>[] }> {
+    class Component extends React.Component<{ stores: Store<{}>[] }> {
 
-      render() {
+      render(): React.ReactNode {
         return (
           <StoreProvider stores={this.props.stores}>
             <Child />
@@ -62,12 +62,12 @@ describe("Provider", () => {
   it("should not re-render if the input store hasn't changed", () => {
 
     class Child extends React.PureComponent {
-      render() {
+      render(): React.ReactNode {
         return (
           <SimstateContext.Consumer>
             {(map) => {
               return (
-                <span>{map!.get(TestStore)!.state.value}</span>
+                <span>{(map!.get(TestStore)! as TestStore).state.value}</span>
               );
             }}
           </SimstateContext.Consumer>
@@ -75,8 +75,8 @@ describe("Provider", () => {
       }
     }
 
-    class Component extends React.Component<{ store: Store<any> }> {
-      render() {
+    class Component extends React.Component<{ store: Store<{}> }> {
+      render(): React.ReactNode {
         return (
           <StoreProvider stores={[this.props.store]}>
             <Child />
@@ -100,27 +100,27 @@ describe("Provider", () => {
 
   it("should support nested providers", () => {
 
-    function Child() {
+    const Child: React.FC = () => {
       return (
         <SimstateContext.Consumer>
           {(map) => (
             <div>
-              <span id="TestStore">{map!.has(TestStore) ? map!.get(TestStore)!.state.value : "no"}</span>
-              <span id="AnotherStore">{map!.has(AnotherStore) ? map!.get(AnotherStore)!.state.text : "no"}</span>
+              <span id="TestStore">{map!.has(TestStore) ? (map!.get(TestStore)! as TestStore).state.value : "no"}</span>
+              <span id="AnotherStore">{map!.has(AnotherStore) ? (map!.get(AnotherStore)! as AnotherStore).state.text : "no"}</span>
             </div>
           )}
         </SimstateContext.Consumer>
       );
     }
 
-    const test = (Parent: React.ComponentType, testStore: string, anotherStore: string) => {
+    const test = (Parent: React.ComponentType, testStore: string, anotherStore: string): void => {
       const wrapper = mount(<Parent />);
 
       expect(wrapper.find("#TestStore").text()).toEqual(testStore);
       expect(wrapper.find("#AnotherStore").text()).toEqual(anotherStore);
     };
 
-    const Parent1 = () => (
+    const Parent1: React.FC = () => (
       <StoreProvider stores={[new TestStore(42)]}>
         <Child />
       </StoreProvider>
@@ -128,7 +128,7 @@ describe("Provider", () => {
 
     test(Parent1, "42", "no");
 
-    const Parent2 = () => (
+    const Parent2: React.FC = () => (
       <StoreProvider stores={[new AnotherStore("hahaha")]}>
         <Parent1 />
       </StoreProvider>
@@ -136,7 +136,7 @@ describe("Provider", () => {
 
     test(Parent2, "42", "hahaha");
 
-    const Parent3 = () => (
+    const Parent3: React.FC = () => (
       <StoreProvider stores={[new AnotherStore("outter")]}>
         <StoreProvider stores={[new AnotherStore("inner")]}>
           <Child />

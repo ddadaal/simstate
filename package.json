@@ -27,33 +27,35 @@
   },
   "homepage": "https://github.com/viccrubs/simstate",
   "dependencies": {
-    "tslib": "^1.9.3"
+    "tslib": "1.10.0"
   },
   "peerDependencies": {
-    "react": ">=16.8.3"
+    "react": ">=16.8.0"
   },
   "devDependencies": {
-    "@types/enzyme": "^3.9.0",
-    "@types/jest": "^24.0.9",
-    "@types/react": ">=16.8.5",
-    "coveralls": "^3.0.3",
-    "cross-env": "^5.2.0",
-    "enzyme": "^3.9.0",
-    "enzyme-adapter-react-16": "^1.10.0",
-    "jest": "^24.1.0",
-    "react": ">=16.8.3",
-    "react-dom": "^16.8.3",
-    "rimraf": "^2.6.3",
-    "rollup": "latest",
-    "rollup-plugin-babel-minify": "latest",
-    "rollup-plugin-livereload": "latest",
-    "rollup-plugin-serve": "latest",
-    "rollup-plugin-typescript2": "latest",
-    "rollup-watch": "latest",
-    "standard-version": "^5.0.1",
-    "ts-jest": "^24.0.0",
-    "tslint": "latest",
-    "tslint-react": "^3.6.0",
-    "typescript": "latest"
+    "@types/enzyme": "3.10.3",
+    "@types/jest": "24.0.18",
+    "@types/react": "16.9.2",
+    "@typescript-eslint/eslint-plugin": "^2.1.0",
+    "@typescript-eslint/eslint-plugin-tslint": "^2.1.0",
+    "@typescript-eslint/parser": "^2.1.0",
+    "coveralls": "3.0.6",
+    "cross-env": "5.2.1",
+    "enzyme": "3.10.0",
+    "enzyme-adapter-react-16": "1.14.0",
+    "eslint": "^6.3.0",
+    "eslint-plugin-react": "^7.14.3",
+    "jest": "24.9.0",
+    "react": "16.9.0",
+    "react-dom": "16.9.0",
+    "rimraf": "3.0.0",
+    "rollup": "1.20.3",
+    "rollup-plugin-babel-minify": "9.0.0",
+    "rollup-plugin-livereload": "1.0.1",
+    "rollup-plugin-serve": "1.0.1",
+    "rollup-plugin-typescript2": "0.24.0",
+    "standard-version": "7.0.0",
+    "ts-jest": "24.0.2",
+    "typescript": "3.6.2"
   }
 }
