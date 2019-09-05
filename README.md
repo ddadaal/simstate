@@ -59,7 +59,7 @@ const MyComponent: React.FC = () => {
 
 # v2 
 
-Since v3, `simstate` has been revamped to fully embrace react hooks. Looking for v2 for more traditional usage and implementation? Check out [v2 branch](https://github.com/viccrubs/simstate/tree/v2).
+Since v3, `simstate` has been revamped to fully embrace react hooks. Looking for more traditional usage and implementation? Check out [v2 branch](https://github.com/viccrubs/simstate/tree/v2).
 
 # Related Articles
 
@@ -68,6 +68,8 @@ Why I write this library: [Simstate and Why](https://viccrubs.me/articles/simsta
 # Credits
 
 [unstated-next](https://github.com/jamiebuilds/unstated-next) - This tool is hugely inspired by unstated-next.
+
+[outstated](https://github.com/yamalight/outstated/) - The implementation looks alike. 
 
 # License
 
