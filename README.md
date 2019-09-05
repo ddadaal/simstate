@@ -11,270 +11,55 @@
 Talk is cheap. Here is the code. :smile:
 
 ```jsx
-import React from "react";
-import { Store, useStore, StoreProvider } from "simstate";
+import React, { useState, useCallback, useRef } from "react";
+import { useStore, StoreProvider, createStore } from "simstate";
 
-// 1. Define your stores
+// 1. Define your stores as a custom hook.
+//    Any hook supported by React is supported here!
+function counterStore(initialValue: number) {
+  const [value, setValue] = useState(initialValue);
 
-interface IStore {
-  value: number;
+  const incrementStep = useRef(1).current;
+  const increment = useCallback(() => setValue(value + incrementStep), []);
+
+  return { value, setValue, increment };
 }
 
-class TestStore extends Store<IStore> {
-  state = { value: 42 };
+// 2. Create a store (Arguments as parameters to the function)
+//    Arguments are type-checked so never pass bad arguments!
+const store = createStore(counterStore, 42);
 
-  increment() {
-    this.setState({ value: this.state.value + 1 });
-  }
-}
+// 3. Wrap your component with StoreProvider
+const RootComponent: React.FC = () => (
+  <StoreProvider stores={[store]}>
+    <MyComponent />
+  </StoreProvider>
+);
 
-class AnotherStore extends Store<{}> { }
-
-// 2. Wrap your component tree with `StoreProvider`
-
-const store = new TestStore();
-const anotherStore = new AnotherStore();
-
-const RootComponent = () => {
-  return (
-    <StoreProvider stores={[store, anotherStore]}>
-      <CounterWithHook />
-      <ComponentWithRenderProps />
-      <ComponentWithHOC />
-    </StoreProvider>
-  );
-};
-
-// 3. Use `useStore` hook to get one single store instance (recommended)
-
-function CounterWithHook() {
-  const store = useStore(TestStore); // the type of `store` is inferred!
+// 4. Pass the store function to useStore to get the store
+const MyComponent: React.FC = () => {
+  const store = useStore(counterStore);
 
   return (
     <div>
-      <p>Current value: {store.state.value}</p>
-      <button onClick={() => store.increment()}>Increment</button>
+      <p>Current: <span>{store.value}</span></p>
+      <button onClick={store.increment}>Increment</button>
+      <button onClick={() => store.setValue(store.value - 1)}>Decrement</button>
     </div>
   );
 }
-
-// 3.1 Use render props
-function ComponentWithRenderProps() {
-  return (
-    <StoreConsumer>
-      {({ useStore }: ConsumerActions) => { // inject a ConsumerActions object. Explicitly specifying type is not required.
-        const store = useStore(TestStore); 
-        return (
-          <span>
-            {store.state.value}
-          </span>
-        );
-      }}
-    </StoreConsumer>
-  );
-}
-
-// 3.2 Use HOC
-
-// extends WithStoresProps to get `useStore` function
-interface Props extends WithStoresProps { }
-
-const ComponentWithHOC = withStores(({ useStore }: Props) => (
-  <span>{useStore(TestStore).state.value}</span>
-));
-
-// Once the promise returned by `setState` resolves,
-// components that use render props and HOC will have updated,
-// but these using `useStore` hook may not.
-function AwaitedComponent() {
-  return (
-    <StoreConsumer>
-      {({ useStore }) => { 
-        const store = useStore(TestStore);
-        return (
-          <button onClick={async () => {
-            console.log(store.state.value) // 42
-
-            // update state via function
-            await store.setState(({ value }) => ({ value: value + 2 }));
-
-            console.log(store.state.value) // 44, and the innerText of this button will also be 44
-          }}>
-            {store.state.value}
-          </button>
-        );
-      }}
-    </StoreConsumer>
-  );
-}
-
-// 4. Partial observer feature
-
-class MultiStateStore extends Store<{state1: string; state2: string;}> { }
-
-function PartialObserver() {
-
-  // Update the component as soon as the state is updated
-  const store = useStore(MultiStateStore);
-
-  // Update ONLY WHEN state property "state1" OR "state2" is changed (using Object.is for identity)
-  const store1 = useStore(MultiStateStore, ["state1", "state2"]);
-
-  // The followings have the same effect as above
-  const store2 = useStore(MultiStateStore, [(s) => s.state1, "state2"]);
-  const store3 = useStore(MultiStateStore, ["state1", (s) => s.state2]);
-  const store4 = useStore(MultiStateStore, 
-    (prevState, currState) => 
-      Object.is(prevState.state1, currState.state1) 
-      && Object.is(prevState.state2, currState.state2)
-  ); // the function determines whether two state are equal
-
-  // Type Error: "b" is not in {state1: string; state2: string;}
-  const store5 = useStore(MultiStateStore, ["b"]);
-  const store6 = useStore(MultiStateStore, [(s) => s.b]);
-
-  // ...
-}
-
-
 ```
 
 # Features
 
 - Simple APIs and you just read all of them
 - No dependency but React 16.8 or higher and [tslib](https://github.com/Microsoft/tslib) for TypeScript projects
-- Strongly typed with TypeScript. All types can be inferred so you don't have to `as` or `any` anymore!
+- Strongly typed with TypeScript, and all types can be inferred.
 - Nested providers. Inner provided stores will override outer stores
-- Designed with performance in mind
-- (WIP) Basic SSR utilities support
 
-# Common Pitfalls
+# v2 
 
-- Under the hood, the provided stores will be stored in a `Map` with `store's constructor` as the key and `store instance itself` as the value. To avoid unnecessary re-renders, `StoreProvider` caches inner context and only reassigns context if the provided maps are different. Two maps are different if they contain different stores. 
-
-- Once the promise returned by `setState` resolves, it is guaranteed that components that use render props and HOC have updated, but these using `useStore` hook will not wait for the update. It is due to [the missing callback support for setState hook](https://github.com/facebook/react/issues/14174). Consider using render-props or HOC if it is needed: the APIs are the same, so the migration should not be a big trouble.
-
-- `useStores` is deprecated since 2.0 and will be removed in a future release. Use `useStore` for better maintainability.
-
-- When calling `useStore` on one store multiple times, only the last call will actually take effect.
-  
-```jsx
-function Component() {
-  const store0 = useStore(TestStore);
-  const store1 = useStore(TestStore, []); // override previous call
-  
-  // store0 === store1
-  // the component will NOT update when TestStores's `value` is changed,
-  // because the last call passes [] as second parameter,
-  // indicating the component doesn't respond to any change in the store.
-
-  // ...
-}
-```
-
-It is sometimes prone to error, for example when using HOC and having event handler that need to interact with store. In such case, it is recommended to set the store into a instance member.
-
-```jsx
-
-// After the first render, the component WILL NOT update when TestStore's value is changed
-// Since render calls to useStore with [] as second parameter,
-// the component observers to no state in TestStore
-
-// After clicking the button, however, the component WILL update when value is changed,
-// Since event handler calls useStore,
-// which overrides the useStore call in the `render` method
-
-@withStores
-class Component extends React.Component<WithStoresProps> {
-  
-  onClick = () => {
-    this.props.useStore(TestStore).increment();
-  }
-  
-  render() {
-    const store = this.props.useStore(TestStore, []);
-    return (
-      <button onClick={this.onClick}>button</button>;
-    )
-  }
-}
-
-```
-
-```jsx
-@withStores
-class Component extends React.Component<WithStoresProps> {
-  // Set the store as a member instance
-  // to avoid accidental useStore override
-  store = this.props.useStore(TestStore, []);
-
-  onClick = () => {
-    this.store.increment();
-  }
-  
-  render() {
-    return (
-      <button onClick={this.onClick}>button</button>;
-    )
-  }
-}
-```
-
-- Using getter-only property in stores to compute derived state (like MobX's `@computed`) is discouraged, because underlying state properties when using the `partial observer` feature may be missed. The TypeScript will also emit error if you specify a property name that is not included in the store's `state`. Consider including the derived state into state object, and export a updater which updates the original and the derived state at the same time.
-
-```jsx
-class AStore extends Store<{ text: string }> {
-  state = { text: "123" };
-  
-  // discouraged
-  get derivedState() {
-    return this.text + " ";
-  } 
-}
-
-function AComponentUsingDerivedState() {
-
-  // Not use the partial observer feature
-  // everything works fine
-  const store0 = useStore(AStore);
-
-  // Type error: State doesn't contain a key named "derivedState"
-  const store1 = useStore(AStore, ["derivedState"]); 
-
-  // This will work, but not encouraged
-  // Since you can't ensure that users (incluing yourself!) will pass in "text" every time
-  // And also you have to manually change all such occurrences after the original store is redesigned
-  const store2 = useStore(AStore, ["text"]);
-
-  // if you ignore the error and pass an empty array in...
-  // the component will not update even text is updated
-  const store3 = useStore(AStore, []); 
-
-  // ...
-}
-
-
-// Recommended
-class BStore extends Store<{ text: string; derived: string; }> {
-  state = { text: "123", derived: "123 "};
-
-  update(text: string) {
-    this.setState({ text, derived: `${text} ` });
-  }
-}
-
-```
-
-## Roadmap
-
-- [x] Store and `useStore` hook
-- [x] Render props component
-- [x] HOC
-- [X] Add test
-- [X] Achieve high test coverage
-- [X] Implement `setState` promise resolve after component update for hook use
-- [X] [Partial observer](https://github.com/viccrubs/simstate/blob/partial-observer/partial-observer-proposal.md)
-- [ ] SSR utilities and its example
+Since v3, `simstate` has been revamped to fully embrace react hooks. Looking for v2 for more traditional usage and implementation? Check out [v2 branch](https://github.com/viccrubs/simstate/tree/v2).
 
 # Related Articles
 
@@ -282,7 +67,7 @@ Why I write this library: [Simstate and Why](https://viccrubs.me/articles/simsta
 
 # Credits
 
-[unstated](https://github.com/jamiebuilds/unstated) - This tool is hugely inspired by unstated.
+[unstated-next](https://github.com/jamiebuilds/unstated-next) - This tool is hugely inspired by unstated-next.
 
 # License
 
