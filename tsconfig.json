@@ -13,7 +13,7 @@
     "downlevelIteration": true,
     "sourceMap": true,
     "declaration": true,
-    "importHelpers": true,
+    "importHelpers": true
   },
   "include": [
     "src/**/*.tsx"

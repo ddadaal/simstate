@@ -12,6 +12,7 @@ module.exports = {
   },
   coveragePathIgnorePatterns: [
     '/node_modules/',
+    '/tests',
     'enzyme.js',
   ],
   setupFilesAfterEnv: [

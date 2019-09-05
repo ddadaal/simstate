@@ -1,19 +1,19 @@
-import { MultiStateStore, TestStore } from "./common";
+import { testStore, noParamStore } from "./common";
 import { mount } from "enzyme";
-import { useStore, StoreProvider } from "../src";
+import { useStore, StoreProvider, createStore } from "../src";
 import React from "react";
 
 describe("UseStore", () => {
 
-  const Component = () => {
-    const store = useStore(TestStore);
+  const Component: React.FC = () => {
+    const store = useStore(testStore);
     return (
-      <span>{store.state.value}</span>
+      <span>{store.value}</span>
     );
   };
 
   class UpdateBlocker extends React.PureComponent {
-    render() {
+    render(): React.ReactNode {
       return (
         this.props.children
       );
@@ -21,54 +21,55 @@ describe("UseStore", () => {
   }
 
   it("should render with current store state", () => {
-    const store = new TestStore(42);
-
+    const store = createStore(testStore, 42);
     const wrapper = mount(
       <StoreProvider stores={[store]}>
         <UpdateBlocker>
-          <Component/>
+          <Component />
         </UpdateBlocker>
       </StoreProvider>,
     );
-
     expect(wrapper.find("span").text()).toBe("42");
   });
 
-  it("should add a listener when mounted and remove one when unmounted", () => {
-    const store = new TestStore(42);
+  it("should update when store updated", () => {
+    const store = createStore(testStore, 42);
 
-    // tslint:disable-next-line
-    expect(store["observers"].size).toBe(0);
+    const Component = () => {
+      const { value, setValue } = useStore(testStore);
+      return (
+        <div>
+          <span>{value}</span>
+          <button onClick={() => setValue(value + 1)}>Increment</button>
+        </div>
+      );
+    }
 
     const wrapper = mount(
       <StoreProvider stores={[store]}>
-        <UpdateBlocker>
         <Component />
-        </UpdateBlocker>
-      </StoreProvider>,
-    );
+      </StoreProvider>
+    )
 
-    // tslint:disable-next-line
-    expect(store["observers"].size).toBe(1);
+    const span = wrapper.find("span");
+    const btn = wrapper.find("button");
 
-    wrapper.unmount();
+    expect(span.text()).toBe("42");
+    btn.simulate("click");
+    expect(span.text()).toBe("43");
 
-    // tslint:disable-next-line
-    expect(store["observers"].size).toBe(0);
 
   });
 
   it("should report error when using a store that is not provided", () => {
-    const Component = () => {
-      useStore(TestStore);
+    const Component: React.FC = () => {
+      useStore(noParamStore);
       return <div>mounted!</div>;
     };
 
     expect(() => mount(
       <StoreProvider stores={[]}>
-        <UpdateBlocker>
         <Component />
-        </UpdateBlocker>
       </StoreProvider>,
     )).toThrowError();
   });
@@ -77,80 +78,59 @@ describe("UseStore", () => {
     expect(() => mount(<Component />)).toThrowError();
   });
 
-  it("should not update when updating a not dependent state", () => {
-
-    const store = new MultiStateStore("state1", "state2", "state3");
+  it("should update even UpdateBlocker blocks update", () => {
+    const store = createStore(testStore, 42);
 
     const Component = () => {
-
-      const store = useStore(MultiStateStore, ["state1", (s) => s.state3 ]);
-
+      const { value, setValue } = useStore(testStore);
       return (
         <div>
-          <span id="state1">{store.state.state1}</span>
-          <span id="state2">{store.state.state2}</span>
-          <span id="state3">{store.state.state3}</span>
+          <span>{value}</span>
+          <button onClick={() => setValue(value + 1)}>Increment</button>
         </div>
       );
-    };
+    }
 
-    const wrapper = mount(
+    const Root = () => (
       <StoreProvider stores={[store]}>
         <UpdateBlocker>
           <Component />
         </UpdateBlocker>
-      </StoreProvider>,
+      </StoreProvider>
     );
 
-    const expectValues = (state1: string, state2: string, state3: string) => {
-      expect(wrapper.find("#state1").text()).toBe(state1);
-      expect(wrapper.find("#state2").text()).toBe(state2);
-      expect(wrapper.find("#state3").text()).toBe(state3);
-    };
+    const wrapper = mount(<Root />);
 
-    expectValues("state1", "state2", "state3");
+    const span = wrapper.find("span");
+    const btn = wrapper.find("button");
 
-    store.setState({ state2: "123" });
-
-    expectValues("state1", "state2", "state3");
-
-    store.setState({ state3: "new state3"});
-
-    expectValues("state1", "123", "new state3");
-
+    expect(span.text()).toBe("42");
+    btn.simulate("click");
+    expect(span.text()).toBe("43");
   });
 
-  it("should not update when the custom comparer returns true", async () => {
-    const store = new TestStore(42);
+  it("should use latest provided store when multiple stores with the same storeInit is provided", () => {
+    const store1 = createStore(testStore, 1);
+    const store2 = createStore(testStore, 2);
 
     const Component = () => {
-
-      const store = useStore(TestStore, (prev, curr) => prev.value === curr.value - 1);
-
+      const { value, setValue } = useStore(testStore);
       return (
-          <span>{store.state.value}</span>
+        <div>
+          <span>{value}</span>
+          <button onClick={() => setValue(value + 1)}>Increment</button>
+        </div>
       );
-    };
+    }
 
     const wrapper = mount(
-      <StoreProvider stores={[store]}>
-        <UpdateBlocker>
+      <StoreProvider stores={[store1]}>
+        <StoreProvider stores={[store2]}>
           <Component />
-        </UpdateBlocker>
-      </StoreProvider>,
+        </StoreProvider>
+      </StoreProvider>
     );
 
-    expect(wrapper.find("span").text()).toBe("42");
-
-    await store.increment();
-    wrapper.update();
-
-    expect(wrapper.find("span").text()).toBe("42");
-
-    await store.setState((s) => ({ value: s.value }));
-    wrapper.update();
-
-    expect(wrapper.find("span").text()).toBe("43");
-
+    expect(wrapper.find("span").text()).toBe("2");
   });
 });
