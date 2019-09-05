@@ -2,7 +2,7 @@ import React from "react";
 import { Store } from "./types";
 
 export interface StoreProviderProps {
-  stores: Store<unknown, unknown[]>[];
+  stores: Store[];
 }
 
 const StoreProvider: React.FC<StoreProviderProps> = ({ stores, children }) => {

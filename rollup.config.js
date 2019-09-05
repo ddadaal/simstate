@@ -1,7 +1,4 @@
-//import typescript from 'typescript';
 import typescript from 'rollup-plugin-typescript2';
-//import serve from 'rollup-plugin-serve';
-//import livereload from 'rollup-plugin-livereload';
 import minify from 'rollup-plugin-babel-minify';
 
 import pkg from "./package.json";

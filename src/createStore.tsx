@@ -3,7 +3,8 @@ import { StoreInit, Store } from "./types";
 import { contextMap } from "./contextMap";
 
 
-export default function createStore<TReturnValue, TParams extends unknown[]>(storeInit: StoreInit<TReturnValue, TParams>, ...params: TParams): Store<TReturnValue, TParams> {
+export default function createStore<TReturnValue, TParams extends unknown[]>
+  (storeInit: StoreInit<TReturnValue, TParams>, ...params: TParams): Store {
 
   let Context = contextMap.get(storeInit) as React.Context<TReturnValue | null>;
 
@@ -18,8 +19,7 @@ export default function createStore<TReturnValue, TParams extends unknown[]>(sto
   }
 
   return {
-    storeInit,
-    Provider: Provider,
+    Provider,
   };
 
 }

@@ -3,10 +3,7 @@ import { mount } from "enzyme";
 
 describe("Metatest", () => {
 
-  test("createStore should add")
-
   test("Empty test should run without error", () => {
-
 
   });
 

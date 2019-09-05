@@ -20,7 +20,7 @@ function counterStore(initialValue: number) {
   const [value, setValue] = useState(initialValue);
 
   const incrementStep = useRef(1).current;
-  const increment = useCallback(() => setValue(value + incrementStep), []);
+  const increment = useCallback(() => setValue(value + incrementStep), [value]);
 
   return { value, setValue, increment };
 }

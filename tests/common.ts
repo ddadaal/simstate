@@ -1,15 +1,31 @@
-import { useState } from "react";
+import React, { useState, useRef, useCallback } from "react";
 
-export function testStore() {
-  const [value, setValue] = useState(42);
+export function testStore(initialValue: number) {
+  const [value, setValue] = useState(initialValue);
 
   return { value, setValue };
 }
 
-export function anotherStore(initialValue: number) {
-  const [value1, setValue1] = useState(42);
+export function noParamStore() {
+  const [value, setValue] = useState(1);
+  const [value2, setValue2] = useState(2);
 
-  const [value2, setValue2] = useState(initialValue);
+  return { value, setValue, value2, setValue2 };
+}
 
-  return { value1, setValue1, value2, setValue2 };
+export function counterStore(initialValue: number) {
+  const [value, setValue] = useState(initialValue);
+
+  const incrementStep = useRef(1).current;
+  const increment = useCallback(() => setValue(value + incrementStep), []);
+
+  return { value, setValue, increment };
+}
+
+export class UpdateBlocker extends React.PureComponent {
+  render() {
+    return (
+      this.props.children
+    );
+  }
 }

@@ -1,4 +1,5 @@
-import Adapter from "enzyme-adapter-react-16";
+/* eslint-disable */
+const Adapter = require("enzyme-adapter-react-16");
 
 require("enzyme").configure({ adapter: new Adapter() });
 
