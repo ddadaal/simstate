@@ -36,12 +36,12 @@ export function createStore<TReturnValue, TParams extends unknown[]>
 }
 
 export function useStore<TReturnValue>(storeInit: StoreInit<TReturnValue, unknown[]>): TReturnValue {
-  const Context = contextMap.get(storeInit) as React.Context<TReturnValue | null>;
-  if (!Context) {
+  const context = contextMap.get(storeInit) as React.Context<TReturnValue | null>;
+  if (!context) {
     throw new Error(`${storeInit.name} is not created! Call createStore on this storeInit before using it!`);
   }
 
-  const value = useContext(Context);
+  const value = useContext(context);
   if (!value) {
     throw new Error(`${storeInit.name} is not provided! Wrap your components with StoreProvider.`);
   }
