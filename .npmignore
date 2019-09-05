@@ -3,7 +3,7 @@
 .csscomb.json
 .csslintrc
 .editorconfig
-.eslintrc
+.eslintrc.json
 .flowconfig
 .gitattributes
 .jscsrc
@@ -11,5 +11,11 @@
 .rpt2_cache/
 .vscode/
 .env
+coverage
+examples
+tests
 
+tsconfig.json
+*.config.js
 src
+.travis.yml
