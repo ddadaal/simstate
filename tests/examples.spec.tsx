@@ -4,7 +4,7 @@ import { mount } from "enzyme";
 
 describe("Basic test examples", () => {
   it("should work as intended", () => {
-    function counterStore(initialValue: number) {
+    function CounterStore(initialValue: number) {
       const [value, setValue] = useState(initialValue);
 
       const incrementStep = useRef(1).current;
@@ -13,22 +13,22 @@ describe("Basic test examples", () => {
       return { value, setValue, increment };
     }
 
-    const store = createStore(counterStore, 42);
+    const counterStore = createStore(CounterStore, 42);
 
     const RootComponent: React.FC = () => (
-      <StoreProvider stores={[store]}>
+      <StoreProvider stores={[counterStore]}>
         <MyComponent />
       </StoreProvider>
     );
 
     const MyComponent: React.FC = () => {
-      const store = useStore(counterStore);
+      const counterStore = useStore(CounterStore);
 
       return (
         <div>
-          <p>Current: <span>{store.value}</span></p>
-          <button id="btnIncrement" onClick={store.increment}>Increment</button>
-          <button id="btnDecrement" onClick={() => store.setValue(store.value - 1)}>Decrement</button>
+          <p>Current: <span>{counterStore.value}</span></p>
+          <button id="btnIncrement" onClick={counterStore.increment}>Increment</button>
+          <button id="btnDecrement" onClick={() => counterStore.setValue(counterStore.value - 1)}>Decrement</button>
         </div>
       );
     }
