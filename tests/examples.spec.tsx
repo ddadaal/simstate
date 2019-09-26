@@ -50,4 +50,41 @@ describe("Basic test examples", () => {
     expect(span.text()).toEqual("42");
 
   })
-})
+});
+
+describe("immutable store instance examples", () => {
+  it("should work as intended", () => {
+    function AStore() {
+      const [count, setCount] = useState(1);
+      return { count, setCount };
+    }
+
+    const MyComponent: React.FC = () => {
+      const aStore = useStore(AStore);
+
+      const increment = useCallback(() => {
+        aStore.setCount(aStore.count + 1);
+      }, [aStore]); // make sure aStore is one of the deps.
+
+      return (
+        <div>
+          <span>{aStore.count}</span>
+          <button onClick={increment}>Increment</button>
+        </div>
+      )
+    };
+
+    const wrapper = mount(<StoreProvider stores={[createStore(AStore)]}>
+      <MyComponent />
+    </StoreProvider>);
+
+    const span = wrapper.find("span");
+    const btnIncrement = wrapper.find("button");
+
+    expect(span.text()).toEqual("1");
+
+    btnIncrement.simulate("click");
+
+    expect(span.text()).toEqual("2");
+  })
+});

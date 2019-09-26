@@ -73,6 +73,8 @@ const MyComponent = () => {
 }
 ```
 
+- Store instance is **immutable**. Every time a state is changed, a new store instance is created. Therefore, when store instance is used in combination with your custom hook, make sure that **store instance is one of your hook deps**. [(examples/immutable_store_instance.tsx)](https://github.com/viccrubs/simstate/blob/master/examples/immutable_store_instance.tsx)
+
 # Related Articles
 
 Why I write this library: [Simstate and Why](https://viccrubs.me/articles/simstate-and-why/en)
