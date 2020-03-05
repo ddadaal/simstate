@@ -1,8 +1,8 @@
 # simstate
 [![npm](https://img.shields.io/npm/v/simstate.svg?style=flat-square)](https://www.npmjs.com/package/simstate)
 [![types](https://img.shields.io/npm/types/simstate.svg?style=flat-square)](https://www.npmjs.com/package/simstate)
-[![Build Status](https://img.shields.io/travis/viccrubs/simstate.svg?style=flat-square)](https://travis-ci.org/viccrubs/simstate) 
-[![Coverage Status](https://img.shields.io/coveralls/github/viccrubs/simstate.svg?style=flat-square)](https://coveralls.io/github/viccrubs/simstate?branch=master) 
+[![Build Status](https://img.shields.io/travis/ddadaal/simstate.svg?style=flat-square)](https://travis-ci.org/ddadaal/simstate) 
+[![Coverage Status](https://img.shields.io/coveralls/github/ddadaal/simstate.svg?style=flat-square)](https://coveralls.io/github/ddadaal/simstate?branch=master) 
 
 `simstate` is a strongly-typed React state management tool favoring [React Hooks](https://reactjs.org/docs/hooks-intro.html) and [TypeScript](https://www.typescriptlang.org/).
 
@@ -58,11 +58,11 @@ const MyComponent: React.FC = () => {
 
 # v2 
 
-Since v3, `simstate` has been revamped to fully embrace react hooks. Looking for more traditional usage and implementation? Check out [v2 branch](https://github.com/viccrubs/simstate/tree/v2).
+Since v3, `simstate` has been revamped to fully embrace react hooks. Looking for more traditional usage and implementation? Check out [v2 branch](https://github.com/ddadaal/simstate/tree/v2).
 
 # Tips
 
-- Check [examples](https://github.com/viccrubs/simstate/tree/master/examples) for more usage
+- Check [examples](https://github.com/ddadaal/simstate/tree/master/examples) for more usage
 - Name your store with **capital letter** (`AStore`), and name with store instance **with lowercase letter** (`aStore`). It makes it easy to work with multiple stores in one component.
 
 ```tsx
@@ -73,11 +73,11 @@ const MyComponent = () => {
 }
 ```
 
-- Store instance is **immutable**. Every time a state is changed, a new store instance is created. Therefore, when store instance is used in combination with your custom hook, make sure that **store instance is one of your hook deps**. [(examples/immutable_store_instance.tsx)](https://github.com/viccrubs/simstate/blob/master/examples/immutable_store_instance.tsx)
+- Store instance is **immutable**. Every time a state is changed, a new store instance is created. Therefore, when store instance is used in combination with your custom hook, make sure that **store instance is one of your hook deps**. [(examples/immutable_store_instance.tsx)](https://github.com/ddadaal/simstate/blob/master/examples/immutable_store_instance.tsx)
 
 # Related Articles
 
-Why I write this library: [Simstate and Why](https://viccrubs.me/articles/simstate-and-why/en)
+Why I write this library: [Simstate and Why](https://ddadaal.me/articles/simstate-and-why/en)
 
 # Credits
 
