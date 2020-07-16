@@ -75,9 +75,10 @@ const MyComponent = () => {
 
 - Store instance is **immutable**. Every time a state is changed, a new store instance is created. Therefore, when store instance is used in combination with your custom hook, make sure that **store instance is one of your hook deps**. [(examples/immutable_store_instance.tsx)](https://github.com/ddadaal/simstate/blob/master/examples/immutable_store_instance.tsx)
 
-# Related Articles
+# Related
 
-Why I write this library: [Simstate and Why](https://ddadaal.me/articles/simstate-and-why/en)
+[Simstate and Why](https://ddadaal.me/articles/simstate-and-why/en) (English): This article talks about why I write this library. 
+[simstate-i18n](https://github.com/ddadaal/simstate-i18n): A Strongly-typed React i18n Library based on simstate.
 
 # Credits
 
@@ -87,4 +88,4 @@ Why I write this library: [Simstate and Why](https://ddadaal.me/articles/simstat
 
 # License
 
-MIT
+MIT © [ddadaal](https://github.com/ddadaal)
