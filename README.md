@@ -6,6 +6,12 @@
 
 `simstate` is a strongly-typed React state management tool favoring [React Hooks](https://reactjs.org/docs/hooks-intro.html) and [TypeScript](https://www.typescriptlang.org/).
 
+# Install
+
+```bash
+npm install --save simstate
+```
+
 # How to use
 
 Talk is cheap. Here is the code. :smile:
