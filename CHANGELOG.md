@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.1](https://github.com/viccrubs/simstate/compare/v3.0.0...v3.0.1) (2022-05-29)
+
+
+### Bug Fixes
+
+* wrap StoreProviderProps with PropsWithChildren ([25c470d](https://github.com/viccrubs/simstate/commit/25c470d15f7a6ee5cd83d44850c3880c618ddd41))
+
 ## [3.0.0](https://github.com/viccrubs/simstate/compare/v2.0.1...v3.0.0) (2019-09-05)
 
 
