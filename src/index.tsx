@@ -6,9 +6,9 @@ export interface Store {
   Provider: React.ComponentType;
 }
 
-export interface StoreProviderProps {
+export type StoreProviderProps = React.PropsWithChildren<{
   stores: Store[];
-}
+}>;
 
 const contextMap = new Map<StoreInit<unknown, unknown[]>, React.Context<unknown | null>>();
 
